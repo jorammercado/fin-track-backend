@@ -92,6 +92,22 @@ const deleteAccountByAccountID = async (account_id) => {
     }
 }
 
+const updateAccount = async (account_id, account) => {
+    try {
+        const { firstname, lastname, profile_img, about, dob, username, email } = account
+        const updatedAccount = await db.one(
+            `UPDATE accounts SET firstname=$1, lastname=$2, ` +
+            `profile_img=$3, about=$4, dob=$5, username=$6, email=$7 WHERE account_id=$8 ` +
+            `RETURNING *`,
+            [firstname, lastname, profile_img, about, dob, username, email, account_id]
+        )
+        return updatedAccount
+    }
+    catch (err) {
+        return { err: `${err}, sql query error in updating an account` }
+    }
+}
+
 module.exports = {
     getOneAccount,
     getAllAccounts,
@@ -99,5 +115,6 @@ module.exports = {
     getOneAccountByUserName,
     createAccount,
     deleteAccountByUsername,
-    deleteAccountByAccountID
+    deleteAccountByAccountID,
+    updateAccount
 }
