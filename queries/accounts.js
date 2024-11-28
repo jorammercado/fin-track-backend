@@ -19,7 +19,19 @@ const getAllAccounts = async () => {
     }
 }
 
+const getOneAccountByEmail = async ( email ) => {
+    try {
+        const account = await db.oneOrNone("SELECT * FROM accountss WHERE email=$1",
+            email)
+        return account
+    }
+    catch (err) {
+        return { err: `${err}, sql query error - get one account by email` }
+    }
+}
+
 module.exports = {
     getOneAccount,
-    getAllAccounts
+    getAllAccounts,
+    getOneAccountByEmail
 }
