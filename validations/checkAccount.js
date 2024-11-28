@@ -1,4 +1,7 @@
-const { getOneAccountByUserName, getOneAccountByEmail } = require("../queries/accounts")
+const { getOneAccountByUserName,
+    getOneAccountByEmail,
+    getAllAccounts
+} = require("../queries/accounts")
 
 const checkUsernameProvided = (req, res, next) => {
     if (req.body?.username) {
@@ -90,6 +93,18 @@ const checkNewPasswordProvided = (req, res, next) => {
     } else {
         res.status(400).json({ error: "New password is required!" })
     }
+}
+
+const checkValidUsername = async (req, res, next) => {
+    const allAccounts = await getAllUsers()
+    const { username } = req.params
+    const allUsernames = allUsers.map(e => e.username)
+    if (allUsernames.includes(Number(username)))
+        return next()
+    else
+        res.status(400).json({
+            error: `server error - invalid username sent`
+        })
 }
 
 module.exports = {
