@@ -1,4 +1,4 @@
-const { getOneAccountByUserName } = require("../queries/accounts")
+const { getOneAccountByUserName, getOneAccountByEmail } = require("../queries/accounts")
 
 const checkUsernameProvided = (req, res, next) => {
     if (req.body?.username) {
@@ -34,8 +34,19 @@ const checkEmailProvided = (req, res, next) => {
     }
 }
 
+const checkEmailExists = async (req, res, next) => {
+    const registeredAccount= await getOneAccountByEmail(req.body?.email)
+    if (registeredAccount?.email) {
+        res.status(400).json({ error: "Account already registered with this address" })
+    } else {
+        next()
+    }
+}
+
 module.exports = {
     checkUsernameProvided,
     checkUsernameExists,
-    checkUsernameExistsOtherThanSelf
+    checkUsernameExistsOtherThanSelf,
+    checkEmailProvided,
+    checkEmailExists
 }
