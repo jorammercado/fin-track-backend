@@ -84,6 +84,14 @@ const checkPasswordProvided = (req, res, next) => {
     }
 }
 
+const checkNewPasswordProvided = (req, res, next) => {
+    if (req.body?.newPassword) {
+        return next()
+    } else {
+        res.status(400).json({ error: "New password is required!" })
+    }
+}
+
 module.exports = {
     checkUsernameProvided,
     checkUsernameExists,
@@ -91,5 +99,6 @@ module.exports = {
     checkEmailProvided,
     checkEmailExists,
     checkEmailExistsOtherThanSelf,
-    checkPasswordProvided
+    checkPasswordProvided,
+    checkNewPasswordProvided
 }
