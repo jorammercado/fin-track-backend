@@ -108,6 +108,19 @@ const updateAccount = async (account_id, account) => {
     }
 }
 
+const updateAccountPassword = async (account_id, password) => {
+    try {
+        const updatedAccount = await db.one(
+            `UPDATE accounts SET password_hashed=$1 WHERE account_id=$2 RETURNING *`,
+            [password, account_id]
+        )
+        return updatedAccount
+    }
+    catch (err) {
+        return { err: `${err}, SQL query error in updating an account password` }
+    }
+}
+
 module.exports = {
     getOneAccount,
     getAllAccounts,
@@ -116,5 +129,6 @@ module.exports = {
     createAccount,
     deleteAccountByUsername,
     deleteAccountByAccountID,
-    updateAccount
+    updateAccount,
+    updateAccountPassword
 }
