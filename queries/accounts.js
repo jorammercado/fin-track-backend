@@ -121,6 +121,18 @@ const updateAccountPassword = async (account_id, password) => {
     }
 }
 
+const updateAccountMFAOneTimePassword = async (account_id, hashedOneTimePassword, expirationTime) => {
+    try {
+        await db.none(
+            `UPDATE accounts SET mfa_otp=$1, mfa_otp_expiration=$2 WHERE account_id=$3`,
+            [hashedOneTimePassword, expirationTime, account_id]
+        )
+    } catch (err) {
+        console.error("Error updating an account's MFA - One Time Password: ", err)
+        throw err
+    }
+}
+
 module.exports = {
     getOneAccount,
     getAllAccounts,
@@ -130,5 +142,6 @@ module.exports = {
     deleteAccountByUsername,
     deleteAccountByAccountID,
     updateAccount,
-    updateAccountPassword
+    updateAccountPassword,
+    updateAccountMFAOneTimePassword
 }
