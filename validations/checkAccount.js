@@ -147,7 +147,21 @@ const checkFirstnameFormat = (req, res, next) => {
         res.status(400).json({
             error: `Firstname must contain only letters, apostrophes, or hyphens, ` +
                 `and must be between 2 and 50 characters long!`
-        });
+        })
+    }
+}
+
+const checkLastnameFormat = (req, res, next) => {
+    const nameRegex = /^[a-zA-Z-']+$/
+    const lastname = req.body?.lastname
+
+    if (!lastname || (nameRegex.test(lastname) && lastname.length >= 2 && lastname.length <= 50)) {
+        return next()
+    } else {
+        res.status(400).json({
+            error: `Lastname must contain only letters, apostrophes, or hyphens, ` +
+                `and must be between 2 and 50 characters long!`
+        })
     }
 }
 
@@ -164,5 +178,6 @@ module.exports = {
     checkValidUsername,
     checkAccountIndex,
     checkEmailFormat,
-    checkFirstnameFormat
+    checkFirstnameFormat,
+    checkLastnameFormat
 }
