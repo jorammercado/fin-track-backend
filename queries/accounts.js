@@ -79,11 +79,25 @@ const deleteAccountByUsername = async (username) => {
     }
 }
 
+const deleteAccountByAccountID = async (account_id) => {
+    try {
+        const deletedAccount = await db.one(
+            `DELETE FROM accounts WHERE account_id=$1 RETURNING *`,
+            account_id
+        )
+        return deletedAccount
+    }
+    catch (err) {
+        return { err: `${err}, sql query error in deleting an account` }
+    }
+}
+
 module.exports = {
     getOneAccount,
     getAllAccounts,
     getOneAccountByEmail,
     getOneAccountByUserName,
     createAccount,
-    deleteAccountByUsername
+    deleteAccountByUsername,
+    deleteAccountByAccountID
 }
