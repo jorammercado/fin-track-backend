@@ -28,7 +28,7 @@ const checkUsernameExistsOtherThanSelf = async (req, res, next) => {
     try {
         const { account_id } = req.params
         if (isNaN(Number(account_id))) {
-            return res.status(400).json({ error: "Invalid account ID." })
+            return res.status(400).json({ error: "Invalid or malformed account ID" })
         }
         const registeredAccount = await getOneAccountByUserName(req.body?.username)
         if (registeredAccount?.account_id === Number(account_id) || !registeredAccount) {
@@ -66,7 +66,7 @@ const checkEmailExistsOtherThanSelf = async (req, res, next) => {
     try {
         const { account_id } = req.params
         if (isNaN(Number(account_id))) {
-            return res.status(400).json({ error: "Invalid account ID." })
+            return res.status(400).json({ error: "Invalid or malformed account ID" })
         }
         const registeredAccount = await getOneAccountByEmail(req.body?.email)
         if (registeredAccount?.account_id === Number(account_id) || !registeredAccount) {
@@ -96,15 +96,36 @@ const checkNewPasswordProvided = (req, res, next) => {
 }
 
 const checkValidUsername = async (req, res, next) => {
-    const allAccounts = await getAllUsers()
-    const { username } = req.params
-    const allUsernames = allUsers.map(e => e.username)
-    if (allUsernames.includes(Number(username)))
-        return next()
-    else
-        res.status(400).json({
-            error: `server error - invalid username sent`
-        })
+    try {
+        const allAccounts = await getAllAccounts()
+        const { username } = req.params
+        const allUsernames = allAccounts.map(e => e.username)
+        if (allUsernames.includes(username)) {
+            return next()
+        } else {
+            res.status(400).json({ error: "Invalid username provided." })
+        }
+    } catch (error) {
+        res.status(500).json({ error: "Internal Server Error at checkValidUsername." })
+    }
+}
+
+const checkAccountIndex = async (req, res, next) => {
+    try {
+        const allAccounts = await getAllAccounts()
+        const { account_id } = req.params
+        if (isNaN(Number(account_id))) {
+            return res.status(400).json({ error: "Invalid or malformed account ID" })
+        }
+        const ids = allAccounts.map(e => e.account_id)
+        if (ids.includes(Number(account_id))) {
+            return next()
+        } else {
+            res.status(400).json({ error: "Account ID does not exist." })
+        }
+    } catch (error) {
+        res.status(500).json({ error: "Internal Server Error at checkAccountIndex." })
+    }
 }
 
 module.exports = {
@@ -115,5 +136,7 @@ module.exports = {
     checkEmailExists,
     checkEmailExistsOtherThanSelf,
     checkPasswordProvided,
-    checkNewPasswordProvided
+    checkNewPasswordProvided,
+    checkValidUsername,
+    checkAccountIndex
 }
