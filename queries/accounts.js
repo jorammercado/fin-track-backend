@@ -9,6 +9,17 @@ const getOneAccount = async (id) => {
     }
 }
 
+const getAllAccounts = async () => {
+    try {
+        const allAccounts = await db.any(`SELECT * FROM accounts`)
+        return allAccounts
+    }
+    catch (err) {
+        return { err: `${err}, sql query error - get all accounts` }
+    }
+}
+
 module.exports = {
-    getOneAccount
+    getOneAccount,
+    getAllAccounts
 }
