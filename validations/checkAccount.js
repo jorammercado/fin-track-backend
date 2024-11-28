@@ -37,10 +37,19 @@ const checkEmailProvided = (req, res, next) => {
 const checkEmailExists = async (req, res, next) => {
     const registeredAccount= await getOneAccountByEmail(req.body?.email)
     if (registeredAccount?.email) {
-        res.status(400).json({ error: "Account already registered with this address" })
+        res.status(400).json({ error: "Account already registered with this address." })
     } else {
         next()
     }
+}
+
+const checkEmailExistsOtherThanSelf = async (req, res, next) => {
+    const { account_id } = req.params
+    const registeredAccount = await getOneAccountByEmail(req.body?.email)
+    if (registeredAccount?.account_id === Number(account_id) || !registeredAccount)
+        next()
+    else
+        res.status(400).json({ error: "Account already registered with this email." })
 }
 
 module.exports = {
@@ -48,5 +57,7 @@ module.exports = {
     checkUsernameExists,
     checkUsernameExistsOtherThanSelf,
     checkEmailProvided,
-    checkEmailExists
+    checkEmailExists,
+    checkEmailExistsOtherThanSelf,
+
 }
