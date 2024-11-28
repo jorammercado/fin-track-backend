@@ -130,12 +130,27 @@ const checkAccountIndex = async (req, res, next) => {
 
 const checkEmailFormat = (req, res, next) => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-    if (emailRegex.test(req.body?.email)) {
+    if (!req.body?.email || emailRegex.test(req.body.email)) {
         return next()
     } else {
         res.status(400).json({ error: "Invalid email format!" })
     }
 }
+
+const checkFirstnameFormat = (req, res, next) => {
+    const nameRegex = /^[a-zA-Z-']+$/
+    const firstname = req.body?.firstname
+
+    if (!firstname || (nameRegex.test(firstname) && firstname.length >= 2 && firstname.length <= 50)) {
+        return next()
+    } else {
+        res.status(400).json({
+            error: `Firstname must contain only letters, apostrophes, or hyphens, ` +
+                `and must be between 2 and 50 characters long!`
+        });
+    }
+}
+
 
 module.exports = {
     checkUsernameProvided,
@@ -148,5 +163,6 @@ module.exports = {
     checkNewPasswordProvided,
     checkValidUsername,
     checkAccountIndex,
-    checkEmailFormat
+    checkEmailFormat,
+    checkFirstnameFormat
 }
