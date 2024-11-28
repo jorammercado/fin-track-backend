@@ -19,7 +19,7 @@ const getAllAccounts = async () => {
     }
 }
 
-const getOneAccountByEmail = async ( email ) => {
+const getOneAccountByEmail = async (email) => {
     try {
         const account = await db.oneOrNone("SELECT * FROM accounts WHERE email=$1",
             email)
@@ -30,7 +30,7 @@ const getOneAccountByEmail = async ( email ) => {
     }
 }
 
-const getOneAccountByUserName = async ( username ) => {
+const getOneAccountByUserName = async (username) => {
     try {
         const account = await db.oneOrNone("SELECT * FROM accounts WHERE username=$1",
             username)
