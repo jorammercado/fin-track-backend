@@ -32,7 +32,7 @@ const {
     checkPasswordStrength
 } = require("../validations/checkAccount.js")
 
-const { verifyToken, setDefaultAccountValues } = require("../middleware/MiscUtilityMiddleware.js")
+const { verifyToken, setDefaultAccountValues } = require("../middleware/miscUtilityMiddleware.js")
 const createMailOptions = require("../email/emailOptions.js")
 const transporter = require('../email/emailTransporter.js')
 
