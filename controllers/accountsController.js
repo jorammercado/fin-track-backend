@@ -209,4 +209,25 @@ accounts.post(
         }
     })
 
+// delete account
+users.delete(
+    "/:account_id",
+    verifyToken,
+    checkAccountIndex, async (req, res) => {
+        try {
+            const { account_id } = req.params
+            const deletedAccount = await deleteAccountByAccountID(account_id)
+            if (deletedAccount) {
+                return res.status(200).json({ message: "Account Deleted." })
+            }
+            else {
+                return res.status(404).json({ error: "Failed to Delete Account." })
+            }
+        }
+        catch (error) {
+            console.error("Error deleting account:", error)
+            return res.status(500).json({ error: "Server error, please try again later." })
+        }
+    })
+
 module.exports = accounts
