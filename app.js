@@ -10,7 +10,7 @@ app.get("/", (req, res) => {
 })
 
 const accountsController = require("./controllers/accountsController")
-// app.use("/accounts", accountsController)
+app.use("/accounts", accountsController)
 
 app.get("*", (req, res) => {
     res.status(404).json({ error: "Page not found!" })
