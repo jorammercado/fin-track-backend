@@ -133,18 +133,29 @@ const checkAccountIndex = async (req, res, next) => {
 
 const checkEmailFormat = (req, res, next) => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-    if (!req.body?.email || emailRegex.test(req.body.email)) {
-        return next()
-    } else {
-        res.status(400).json({ error: "Invalid email format!" })
+    const email = req.body?.email
+
+    if (!email || !emailRegex.test(email)) {
+        return res.status(400).json({ error: "Invalid email format!" })
     }
+
+    const [localPart, domainPart] = email?.split('@')
+    const [domainName, topLevelDomain] = domainPart?.split('.')
+
+    if (reservedUsernames.has(localPart.toLowerCase()) ||
+        reservedUsernames.has(domainName.toLowerCase()) ||
+        reservedUsernames.has(topLevelDomain.toLowerCase())) {
+        return res.status(400).json({ error: "Email cannot contain reserved words in any part!" })
+    }
+
+    return next()
 }
 
 const checkFirstnameFormat = (req, res, next) => {
     const nameRegex = /^[a-zA-Z-']+$/
     const firstname = req.body?.firstname
 
-    if (!firstname || (nameRegex.test(firstname) && firstname.length >= 2 && firstname.length <= 50)) {
+    if (!firstname || (nameRegex.test(firstname) && firstname.length >= 2 && firstname.length <= 50 && !reservedUsernames.has(firstname.toLowerCase()))) {
         return next()
     } else {
         res.status(400).json({
@@ -158,7 +169,7 @@ const checkLastnameFormat = (req, res, next) => {
     const nameRegex = /^[a-zA-Z-']+$/
     const lastname = req.body?.lastname
 
-    if (!lastname || (nameRegex.test(lastname) && lastname.length >= 2 && lastname.length <= 50)) {
+    if (!lastname || (nameRegex.test(lastname) && lastname.length >= 2 && lastname.length <= 50 && !reservedUsernames.has(lastname.toLowerCase()))) {
         return next()
     } else {
         res.status(400).json({
@@ -170,7 +181,7 @@ const checkLastnameFormat = (req, res, next) => {
 
 const checkUsernameValidity = (req, res, next) => {
     const { username, firstname, lastname, dob } = req.body
-   
+
     const isReservedUsername = (username) => reservedUsernames.has(username.toLowerCase())
     if (isReservedUsername(username)) {
         return res.status(400).json({ error: "Username cannot be a reserved name!" })
