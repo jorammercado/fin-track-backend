@@ -82,7 +82,7 @@ accounts.post(
             })
         } catch (error) {
             console.error("Error in initiate login:", error)
-            res.status(500).json({
+            return res.status(500).json({
                 error: `An error occurred while processing your request. ` +
                     `Please try again later.`
             })
@@ -95,6 +95,8 @@ accounts.post(
     async (req, res) => {
         const { account_id, otp } = req.body
         const loginFailureMessage = { error: "Invalid account or OTP." }
+        const ip_address = req.ip
+        const device_fingerprint = req.headers['user-agent'] || "unknown"
 
         try {
             const account = await getOneAccount(account_id)
@@ -119,10 +121,33 @@ accounts.post(
 
             delete account.password
 
-            return res.status(200).json({ message: "Login successful.", token, account })
+            res.status(200).json({ message: "Login successful.", token, account })
+
+            // new browser login notification
+            const previousLogins = await getLoginRecordsByAccountID(account.account_id)
+            const isNewDevice = !previousLogins?.some(login =>
+                login.ip_address === ip_address &&
+                login.device_fingerprint === device_fingerprint
+            )
+            if (isNewDevice) {
+                const mailOptionsNewDevice = createMailOptions(account.email,
+                    "New Browser Login Detected",
+                    `We detected a new browser login to your account.\nIP Address: ` +
+                    `${ip_address}\nDevice: ${device_fingerprint}\nIf ` +
+                    `this wasn't you, please reset your password or contact support.`
+                )
+
+                transporter.sendMail(mailOptionsNewDevice)
+                    .then(info => console.log('New browser login email sent:', info.response))
+                    .catch(error => console.error('Failed to send new browser login email:', error))
+
+            }
+            createLoginRecord(account.account_id, ip_address, device_fingerprint)
+                .then(() => console.log('Login record created successfully.'))
+                .catch(error => console.error('Failed to create login record:', error))
         } catch (error) {
             console.error("Error verifying OTP:", error)
-            res.status(500).json({ error: "Server error, please try again later: " })
+            return res.status(500).json({ error: "Server error, please try again later: " })
         }
     })
 
@@ -180,7 +205,7 @@ accounts.post(
                 })
             }
         } catch (error) {
-            res.status(500).json({ error: "Internal server error. Please try again later." })
+            return res.status(500).json({ error: "Internal server error. Please try again later." })
         }
     })
 
