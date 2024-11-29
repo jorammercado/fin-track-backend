@@ -12,7 +12,7 @@ CREATE TABLE accounts (
     password_hashed VARCHAR(255) NOT NULL,
     profile_img TEXT DEFAULT 'Profile Image URL',
     about TEXT DEFAULT 'About Me',
-    dob VARCHAR(20) DEFAULT '1/1/2024',
+    dob VARCHAR(20) DEFAULT '00/0/0000',
     registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     mfa_otp VARCHAR(255),
     mfa_otp_expiration TIMESTAMP );

@@ -207,6 +207,28 @@ const checkUsernameValidity = (req, res, next) => {
     return next()
 }
 
+const checkDobFormat = (req, res, next) => {
+    const dobRegex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/
+    const dob = req.body?.dob
+
+    if (!dob || !dobRegex.test(dob)) {
+        return res.status(400).json({ error: "Date of birth must be in the format ##/##/#### or #/#/####" })
+    }
+
+    const [ , month, day, year ] = dob.match(dobRegex)
+    const dobDate = new Date(`${year}-${month}-${day}`)
+    const today = new Date()
+    const minDob = new Date()
+    minDob.setFullYear(minDob.getFullYear() - 100)
+
+    if (dobDate < minDob || dobDate > today) {
+        return res.status(400).json({ error: "Date of birth must be within the last 100 years and cannot be in the future." })
+    }
+
+    return next()
+}
+
+
 
 module.exports = {
     checkUsernameProvided,
@@ -222,5 +244,6 @@ module.exports = {
     checkEmailFormat,
     checkFirstnameFormat,
     checkLastnameFormat,
-    checkUsernameValidity
+    checkUsernameValidity,
+    checkDobFormat
 }
