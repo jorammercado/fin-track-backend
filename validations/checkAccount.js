@@ -3,6 +3,9 @@ const { getOneAccountByUserName,
     getAllAccounts
 } = require("../queries/accounts")
 
+const reservedUsernames = new Set(['admin', 'root', 'superuser', 'administrator', 'support',
+    'help', 'moderator', 'system', 'guest', 'owner', 'master', 'test', 'user', 'manager'])
+
 const checkUsernameProvided = (req, res, next) => {
     if (req.body?.username) {
         return next()
@@ -165,6 +168,34 @@ const checkLastnameFormat = (req, res, next) => {
     }
 }
 
+const checkUsernameValidity = (req, res, next) => {
+    const { username, firstname, lastname, dob } = req.body
+   
+    const isReservedUsername = (username) => reservedUsernames.has(username.toLowerCase())
+    if (isReservedUsername(username)) {
+        return res.status(400).json({ error: "Username cannot be a reserved name!" })
+    }
+
+    if (firstname?.toLowerCase() + lastname?.toLowerCase() === username?.toLowerCase()) {
+        return res.status(400).json({ error: "Username cannot be the same as your firstname and lastname combined!" })
+    }
+
+    if (dob && username === dob) {
+        return res.status(400).json({ error: "Username cannot be your date of birth!" })
+    }
+
+    if (username.length < 3 || username.length > 30) {
+        return res.status(400).json({ error: "Username must be between 3 and 30 characters long!" })
+    }
+
+    const validUsernameRegex = /^[a-zA-Z0-9_-]+$/
+    if (!validUsernameRegex.test(username)) {
+        return res.status(400).json({ error: "Username must contain only letters, numbers, hyphens, or underscores!" })
+    }
+
+    return next()
+}
+
 
 module.exports = {
     checkUsernameProvided,
@@ -179,5 +210,6 @@ module.exports = {
     checkAccountIndex,
     checkEmailFormat,
     checkFirstnameFormat,
-    checkLastnameFormat
+    checkLastnameFormat,
+    checkUsernameValidity
 }
