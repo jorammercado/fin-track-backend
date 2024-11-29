@@ -32,10 +32,62 @@ const {
     checkPasswordStrength
 } = require("../validations/checkAccount.js")
 
-const { createLoginRecord, getLoginRecordByAccountID } = require("../queries/loginHistory.js")
+const { createLoginRecord, getLoginRecordsByAccountID } = require("../queries/loginHistory.js")
 const { verifyToken, setDefaultAccountValues } = require("../middleware/miscUtilityMiddleware.js")
 const createMailOptions = require("../email/emailOptions.js")
 const transporter = require('../email/emailTransporter.js')
+const OTP_EXPIRATION_MS = 3 * 60 * 1000
+
+// start login processs
+accounts.post(
+    "/login-initiate",
+    checkEmailProvided,
+    checkPasswordProvided,
+    async (req, res) => {
+        try {
+            const oneAccount = await getOneAccountByEmail(req.body.email)
+            const loginFailureMessage = {
+                error: `Login failed. Please check your ` +
+                    `email and password and try again.`
+            }
+            
+            // failed login
+            if (!oneAccount?.email) {
+                return res.status(404).json(loginFailureMessage)
+            }
+            const isMatch = await bcrypt.compare(req.body.password, oneAccount.password)
+            if (!isMatch) {
+                return res.status(400).json(loginFailureMessage)
+            }
+
+            // generate 6 digit OTP
+            const otp = Math.floor(100000 + Math.random() * 900000).toString()
+            const hashedOtp = await bcrypt.hash(otp, 10)
+            const expirationTimeForOTP = new Date(Date.now() + OTP_EXPIRATION_MS)
+            await updateAccountMFAOneTimePassword(oneAccount.account_id, hashedOtp, expirationTimeForOTP)
+
+            // send one time password
+            const mailOptions = createMailOptions(
+                oneAccount.email,
+                "Your OTP for Login",
+                `Your one-time password (OTP) is: ${otp}. It will expire in 3 minutes.`
+            )
+            transporter.sendMail(mailOptions)
+                .then(info => console.log('OTP email sent successfully:', info.response))
+                .catch(error => console.error('Failed to send OTP email:', error));
+
+            return res.status(200).json({
+                message: "Please check your email for the one-time password that has been sent to it.",
+                account_id: oneAccount.account_id
+            })
+        } catch (error) {
+            console.error("Error in initiate login:", error)
+            res.status(500).json({
+                error: `An error occurred while processing your request. ` +
+                    `Please try again later.`
+            })
+        }
+    })
 
 // sign up
 accounts.post(

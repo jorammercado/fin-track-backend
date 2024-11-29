@@ -13,7 +13,7 @@ const createLoginRecord = async (account_id, ip_address, device_fingerprint) => 
     }
 }
 
-const getLoginRecordByAccountID = async (account_id) => {
+const getLoginRecordsByAccountID = async (account_id) => {
     try {
         const loginRecord = await db.any(
             `SELECT * FROM login_history WHERE account_id=$1 ORDER BY login_time DESC`,
@@ -38,6 +38,6 @@ const getAllLoginRecords = async () => {
 
 module.exports = {
     createLoginRecord,
-    getLoginRecordByAccountID,
+    getLoginRecordsByAccountID,
     getAllLoginRecords
 }
