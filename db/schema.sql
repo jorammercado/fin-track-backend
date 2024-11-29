@@ -16,3 +16,10 @@ CREATE TABLE accounts (
     registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     mfa_otp VARCHAR(255),
     mfa_otp_expiration TIMESTAMP );
+
+    CREATE TABLE login_history (
+    history_id SERIAL PRIMARY KEY,
+    account_id INTEGER REFERENCES accounts(account_id) ON DELETE SET NULL,
+    login_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ip_address VARCHAR(50),
+    device_fingerprint TEXT);
