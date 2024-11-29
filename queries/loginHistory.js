@@ -25,7 +25,19 @@ const getLoginRecordByAccountID = async (account_id) => {
     }
 }
 
+const getAllLoginRecords = async () => {
+    try {
+        const allLoginRecords = await db.any(
+            `SELECT * FROM login_history ORDER BY login_time DESC`
+        )
+        return allLoginRecords
+    } catch (err) {
+        return { err: `${err}, sql query error - get all login records` }
+    }
+}
+
 module.exports = {
     createLoginRecord,
-    getLoginRecordByAccountID
+    getLoginRecordByAccountID,
+    getAllLoginRecords
 }
