@@ -32,6 +32,7 @@ const {
     checkPasswordStrength
 } = require("../validations/checkAccount.js")
 
+const { createLoginRecord, getLoginRecordByAccountID } = require("../queries/loginHistory.js")
 const { verifyToken, setDefaultAccountValues } = require("../middleware/miscUtilityMiddleware.js")
 const createMailOptions = require("../email/emailOptions.js")
 const transporter = require('../email/emailTransporter.js')
@@ -53,6 +54,8 @@ accounts.post(
     checkPasswordStrength("password"), async (req, res) => {
         try {
             const newAccount = req.body
+            const ip_address = req.ip
+            const device_fingerprint = req.headers['user-agent'] || "unknown"
             const salt = await bcrypt.genSalt(10)
             newAccount.password = await bcrypt.hash(newAccount.password, salt)
 
@@ -80,6 +83,7 @@ accounts.post(
                     .then(info => console.log('Confirmation email sent:', info.response))
                     .catch(err => console.error('Error sending email:', err))
 
+                await createLoginRecord(createdAccount.account_id, ip_address, device_fingerprint)
                 res.status(201).json({ status: 'success', data: { createdAccount, token } })
             } else {
                 res.status(400).json({
