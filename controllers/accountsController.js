@@ -38,7 +38,7 @@ const createMailOptions = require("../email/emailOptions.js")
 const transporter = require('../email/emailTransporter.js')
 const OTP_EXPIRATION_MS = 3 * 60 * 1000
 
-// start login processs
+// start login 
 accounts.post(
     "/login-initiate",
     checkEmailProvided,
@@ -232,7 +232,7 @@ accounts.delete(
         }
     })
 
-// update user route
+// update account
 accounts.put(
     "/:account_id",
     verifyToken,
@@ -262,6 +262,47 @@ accounts.put(
         }
         catch (error) {
             console.error("Error updating account: ", error)
+            return res.status(500).json({ error: `Server error, please try again later.` })
+        }
+    })
+
+// update password 
+accounts.put(
+    "/:account_id/password",
+    verifyToken,
+    checkAccountIndex,
+    checkPasswordProvided,
+    checkNewPasswordProvided,
+    checkPasswordStrength("newPassword"),
+    async (req, res) => {
+        try {
+            const { account_id } = req.params
+            const { password, newPassword } = req.body
+
+            let account = await getOneAccount(account_id)
+            if (!account) {
+                return res.status(404).json({ error: "Account not found." })
+            }
+
+            const isMatch = await bcrypt.compare(password, account.password)
+            if (!isMatch) {
+                return res.status(400).json({ error: "Invalid credentials. Please try again." })
+            }
+
+            const salt = await bcrypt.genSalt(10)
+            const hashedPassword = await bcrypt.hash(newPassword, salt)
+
+            let updatedAccount = await updateAccountPassword(account_id, hashedPassword)
+            if (updatedAccount.account_id) {
+                delete updatedAccount.password
+                return res.status(200).json(updatedAccount)
+            } else {
+                return res.status(500).json({
+                    error: `Error in updating password, please try again later.`
+                })
+            }
+        } catch (error) {
+            console.error("Unable to update account password: ", error)
             return res.status(500).json({ error: `Server error, please try again later.` })
         }
     })
