@@ -50,7 +50,7 @@ accounts.post(
                 error: `Login failed. Please check your ` +
                     `email and password and try again.`
             }
-            
+
             // failed login
             if (!oneAccount?.email) {
                 return res.status(404).json(loginFailureMessage)
@@ -74,7 +74,7 @@ accounts.post(
             )
             transporter.sendMail(mailOptions)
                 .then(info => console.log('OTP email sent successfully:', info.response))
-                .catch(error => console.error('Failed to send OTP email:', error));
+                .catch(error => console.error('Failed to send OTP email:', error))
 
             return res.status(200).json({
                 message: "Please check your email for the one-time password that has been sent to it.",
@@ -86,6 +86,43 @@ accounts.post(
                 error: `An error occurred while processing your request. ` +
                     `Please try again later.`
             })
+        }
+    })
+
+// complete login
+accounts.post(
+    "/verify-otp",
+    async (req, res) => {
+        const { account_id, otp } = req.body
+        const loginFailureMessage = { error: "Invalid account or OTP." }
+
+        try {
+            const account = await getOneAccount(account_id)
+            if (!account?.account_id) {
+                return res.status(404).json(loginFailureMessage)
+            }
+
+            const isMatch = await bcrypt.compare(otp, account.mfa_otp)
+            if (!isMatch || new Date() > account.mfa_otp_expiration) {
+                return res.status(400).json(loginFailureMessage)
+            }
+
+            const token = jwt.sign(
+                {
+                    account_id: account.account_id,
+                    email: account.email,
+                    username: account.username
+                },
+                process.env.JWT_SECRET,
+                { expiresIn: '30m' }
+            )
+
+            delete account.password
+
+            return res.status(200).json({ message: "Login successful.", token, account })
+        } catch (error) {
+            console.error("Error verifying OTP:", error)
+            res.status(500).json({ error: "Server error, please try again later: " })
         }
     })
 
