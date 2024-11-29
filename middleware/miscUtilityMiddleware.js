@@ -34,6 +34,16 @@ const verifyToken = async (req, res, next) => {
     }
 }
 
+const setDefaultAccountValues = (req, res, next) => {
+    req.body.profile_img = req.body.profile_img || "Profile Image URL"
+    req.body.firstname = req.body.firstname || "Unknown First Name"
+    req.body.lastname = req.body.lastname || "Unknown Last Name"
+    req.body.about = req.body.about || "About Me"
+    req.body.dob = req.body.dob || "00/00/0000"
+    next()
+}
+
 module.exports = {
-    verifyToken
+    verifyToken,
+    setDefaultAccountValues
 }

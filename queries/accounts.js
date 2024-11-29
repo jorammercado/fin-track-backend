@@ -41,9 +41,9 @@ const getOneAccountByUserName = async (username) => {
     }
 }
 
-const createAccount = async (user) => {
+const createAccount = async (account) => {
     try {
-        const createdUser = await db.one(`INSERT INTO accounts (firstname,` +
+        const createdAccount = await db.one(`INSERT INTO accounts (firstname,` +
             ` lastname,` +
             ` email,` +
             ` password_hashed,` +
@@ -51,15 +51,15 @@ const createAccount = async (user) => {
             ` profile_img,` +
             ` about,` +
             ` dob) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
-            [user.firstname,
-            user.lastname,
-            user.email,
-            user.password,
-            user.username,
-            user.profile_img,
-            user.about,
-            user.dob])
-        return createdUser
+            [account?.firstname,
+            account?.lastname,
+            account?.email,
+            account?.password,
+            account?.username,
+            account?.profile_img,
+            account?.about,
+            account?.dob])
+        return createdAccount
     }
     catch (err) {
         return { err: `${err}, sql query error - create user` }
