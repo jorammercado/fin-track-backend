@@ -210,7 +210,7 @@ accounts.post(
     })
 
 // delete account
-users.delete(
+accounts.delete(
     "/:account_id",
     verifyToken,
     checkAccountIndex, async (req, res) => {
