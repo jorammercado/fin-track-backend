@@ -165,7 +165,8 @@ accounts.post(
     checkUsernameValidity,
     checkDobFormat,
     setDefaultAccountValues,
-    checkPasswordStrength("password"), async (req, res) => {
+    checkPasswordStrength("password"),
+    async (req, res) => {
         try {
             const newAccount = req.body
             const ip_address = req.ip
@@ -213,7 +214,8 @@ accounts.post(
 accounts.delete(
     "/:account_id",
     verifyToken,
-    checkAccountIndex, async (req, res) => {
+    checkAccountIndex,
+    async (req, res) => {
         try {
             const { account_id } = req.params
             const deletedAccount = await deleteAccountByAccountID(account_id)
@@ -225,8 +227,42 @@ accounts.delete(
             }
         }
         catch (error) {
-            console.error("Error deleting account:", error)
+            console.error("Error deleting account: ", error)
             return res.status(500).json({ error: "Server error, please try again later." })
+        }
+    })
+
+// update user route
+accounts.put(
+    "/:account_id",
+    verifyToken,
+    checkAccountIndex,
+    checkUsernameExistsOtherThanSelf,
+    checkEmailExistsOtherThanSelf,
+    checkEmailFormat,
+    checkFirstnameFormat,
+    checkLastnameFormat,
+    checkUsernameValidity,
+    checkDobFormat,
+    setDefaultAccountValues,
+    async (req, res) => {
+        try {
+            const { account_id } = req.params
+            const accountToUpdate = req.body
+            let updatedAccount = await updateAccount(account_id, accountToUpdate)
+            if (updatedAccount.account_id) {
+                delete updatedAccount.password
+                return res.status(200).json(updatedAccount)
+            }
+            else {
+                return res.status(404).json({
+                    error: `Account not found or unable to update account.`
+                })
+            }
+        }
+        catch (error) {
+            console.error("Error updating account: ", error)
+            return res.status(500).json({ error: `Server error, please try again later.` })
         }
     })
 
