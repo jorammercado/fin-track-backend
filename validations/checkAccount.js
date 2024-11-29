@@ -215,7 +215,7 @@ const checkDobFormat = (req, res, next) => {
         return res.status(400).json({ error: "Date of birth must be in the format ##/##/#### or #/#/####" })
     }
 
-    const [ , month, day, year ] = dob.match(dobRegex)
+    const [, month, day, year] = dob.match(dobRegex)
     const dobDate = new Date(`${year}-${month}-${day}`)
     const today = new Date()
     const minDob = new Date()
@@ -228,6 +228,35 @@ const checkDobFormat = (req, res, next) => {
     return next()
 }
 
+const checkPasswordStrength = (passwordField) => (req, res, next) => {
+    const password = req.body[passwordField]
+
+    if (!/(?=.*\d)/.test(password)) {
+        return res.status(400).json({ error: "Password must contain at least one digit." })
+    }
+
+    if (!/(?=.*[a-z])/.test(password)) {
+        return res.status(400).json({ error: "Password must contain at least one lowercase letter." })
+    }
+
+    if (!/(?=.*[A-Z])/.test(password)) {
+        return res.status(400).json({ error: "Password must contain at least one uppercase letter." })
+    }
+
+    if (!/(?=.*[\W_])/.test(password)) {
+        return res.status(400).json({ error: "Password must contain at least one special character." })
+    }
+
+    if (password.length < 8) {
+        return res.status(400).json({ error: "Password must be at least 8 characters long." })
+    }
+
+    if (password.length > 128) {
+        return res.status(400).json({ error: "Password must not exceed 128 characters." })
+    }
+
+    next()
+}
 
 
 module.exports = {
@@ -245,5 +274,6 @@ module.exports = {
     checkFirstnameFormat,
     checkLastnameFormat,
     checkUsernameValidity,
-    checkDobFormat
+    checkDobFormat,
+    checkPasswordStrength
 }
