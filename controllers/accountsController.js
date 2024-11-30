@@ -174,7 +174,7 @@ accounts.post(
             const salt = await bcrypt.genSalt(10)
             newAccount.password = await bcrypt.hash(newAccount.password, salt)
 
-            let createdAccount = await createAccount(newAccount)
+            const createdAccount = await createAccount(newAccount)
             if (createdAccount.account_id) {
                 const token = jwt.sign(
                     {
@@ -249,7 +249,7 @@ accounts.put(
         try {
             const { account_id } = req.params
             const accountToUpdate = req.body
-            let updatedAccount = await updateAccount(account_id, accountToUpdate)
+            const updatedAccount = await updateAccount(account_id, accountToUpdate)
             if (updatedAccount.account_id) {
                 delete updatedAccount.password
                 return res.status(200).json(updatedAccount)
@@ -279,7 +279,7 @@ accounts.put(
             const { account_id } = req.params
             const { password, newPassword } = req.body
 
-            let account = await getOneAccount(account_id)
+            const account = await getOneAccount(account_id)
             if (!account) {
                 return res.status(404).json({ error: "Account not found." })
             }
@@ -292,7 +292,7 @@ accounts.put(
             const salt = await bcrypt.genSalt(10)
             const hashedPassword = await bcrypt.hash(newPassword, salt)
 
-            let updatedAccount = await updateAccountPassword(account_id, hashedPassword)
+            const updatedAccount = await updateAccountPassword(account_id, hashedPassword)
             if (updatedAccount.account_id) {
                 delete updatedAccount.password
                 return res.status(200).json(updatedAccount)
@@ -304,6 +304,42 @@ accounts.put(
         } catch (error) {
             console.error("Unable to update account password: ", error)
             return res.status(500).json({ error: `Server error, please try again later.` })
+        }
+    })
+
+// guest login
+accounts.post(
+    "/guest-login",
+    async (req, res) => {
+        try {
+            const guestAccount = await getOneAccountByEmail('guest_account@domain.com')
+            const ip_address = req.ip
+            const device_fingerprint = req.headers['user-agent'] || "unknown"
+
+            if (!guestAccount) {
+                return res.status(500).json({ error: "Guest account is not available. Please try again later." })
+            }
+
+            const token = jwt.sign(
+                {
+                    account_id: guestAccount.account_id,
+                    email: guestAccount.email,
+                    username: guestAccount.username
+                },
+                JWT_SECRET,
+                { expiresIn: '30m' }
+            )
+
+            delete guestAccount.password
+
+            res.status(200).json({ message: "Login successful.", token, guestAccount })
+
+            createLoginRecord(guestAccount.account_id, ip_address, device_fingerprint)
+                .then(() => console.log('Login record created successfully.'))
+                .catch(error => console.error('Failed to create login record:', error))
+        } catch (error) {
+            console.error("Error during guest login:", error)
+            return res.status(500).json({ error: "Server error, please try again later." })
         }
     })
 
