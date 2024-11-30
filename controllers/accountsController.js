@@ -252,7 +252,18 @@ accounts.put(
             const updatedAccount = await updateAccount(account_id, accountToUpdate)
             if (updatedAccount.account_id) {
                 delete updatedAccount.password
-                return res.status(200).json(updatedAccount)
+                res.status(200).json(updatedAccount)
+
+                const mailOptions = createMailOptions(
+                    updatedAccount.email,
+                    'Security Update',
+                    `Your account has been recently updated. If this wasn\'t you, ` +
+                    `please contact support and/or update your password.`
+                )
+
+                transporter.sendMail(mailOptions)
+                    .then(info => console.log('Confirmation email sent:', info.response))
+                    .catch(err => console.error('Error sending email:', err))
             }
             else {
                 return res.status(404).json({
