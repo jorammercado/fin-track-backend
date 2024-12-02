@@ -37,7 +37,7 @@ const checkUsernameExistsOtherThanSelf = async (req, res, next) => {
         if (registeredAccount?.account_id === Number(account_id) || !registeredAccount) {
             return next()
         } else {
-            res.status(409).json({ error: "Account already registered with this username." })
+            return res.status(409).json({ error: "Account already registered with this username." })
         }
     } catch (error) {
         return res.status(500).json({ error: "Internal Server Error at checkUsernameExistsOtherThanSelf." })

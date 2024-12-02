@@ -199,9 +199,9 @@ accounts.post(
                     .catch(err => console.error('Error sending email:', err))
 
                 await createLoginRecord(createdAccount.account_id, ip_address, device_fingerprint)
-                res.status(201).json({ status: 'success', data: { createdAccount, token } })
+                return res.status(201).json({ createdAccount, token })
             } else {
-                res.status(400).json({
+                return res.status(400).json({
                     error: `Failed to create user.`
                 })
             }
