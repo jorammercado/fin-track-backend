@@ -55,7 +55,7 @@ accounts.post(
             if (!oneAccount?.email) {
                 return res.status(404).json(loginFailureMessage)
             }
-            const isMatch = await bcrypt.compare(req.body.password, oneAccount.password)
+            const isMatch = await bcrypt.compare(req.body.password, oneAccount.password_hashed)
             if (!isMatch) {
                 return res.status(400).json(loginFailureMessage)
             }
@@ -119,7 +119,7 @@ accounts.post(
                 { expiresIn: '30m' }
             )
 
-            delete account.password
+            delete account.password_hashed
 
             res.status(200).json({ message: "Login successful.", token, account })
 
@@ -186,7 +186,7 @@ accounts.post(
                     { expiresIn: '30m' }
                 )
 
-                delete createdAccount.password
+                delete createdAccount.password_hashed
 
                 const mailOptions = createMailOptions(
                     createdAccount.email,
@@ -254,7 +254,7 @@ accounts.put(
             const accountToUpdate = req.body
             const updatedAccount = await updateAccount(account_id, accountToUpdate)
             if (updatedAccount.account_id) {
-                delete updatedAccount.password
+                delete updatedAccount.password_hashed
                 res.status(200).json(updatedAccount)
 
                 const mailOptions = createMailOptions(
@@ -298,7 +298,7 @@ accounts.put(
                 return res.status(404).json({ error: "Account not found." })
             }
 
-            const isMatch = await bcrypt.compare(password, account.password)
+            const isMatch = await bcrypt.compare(password, account.password_hashed)
             if (!isMatch) {
                 return res.status(400).json({ error: "Invalid credentials. Please try again." })
             }
@@ -308,7 +308,7 @@ accounts.put(
 
             const updatedAccount = await updateAccountPassword(account_id, hashedPassword)
             if (updatedAccount.account_id) {
-                delete updatedAccount.password
+                delete updatedAccount.password_hashed
 
                 res.status(200).json(updatedAccount)
 
@@ -357,7 +357,7 @@ accounts.post(
                 { expiresIn: '30m' }
             )
 
-            delete guestAccount.password
+            delete guestAccount.password_hashed
 
             res.status(200).json({ message: "Login successful.", token, guestAccount })
 
