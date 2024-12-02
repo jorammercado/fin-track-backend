@@ -218,6 +218,9 @@ accounts.delete(
     async (req, res) => {
         try {
             const { account_id } = req.params
+            if (account_id === "1") {
+                return res.status(401).json({ error: "Guest account cannot be deleted!" })
+            }
             const deletedAccount = await deleteAccountByAccountID(account_id)
             if (deletedAccount) {
                 return res.status(200).json({ message: "Account Deleted." })
