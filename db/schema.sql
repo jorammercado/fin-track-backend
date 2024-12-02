@@ -23,3 +23,43 @@ CREATE TABLE accounts (
     login_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     ip_address VARCHAR(50),
     device_fingerprint TEXT);
+
+CREATE TABLE financial_transactions (
+    transaction_id SERIAL PRIMARY KEY,
+    -- for development reasons use ON DELETE SET NULL instead of ON DELETE CASCADE
+    account_id INTEGER REFERENCES accounts(account_id) ON DELETE SET NULL,
+    transaction_type VARCHAR(20) CHECK (transaction_type IN ('income', 'expense', 'investment')) NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL,
+    category VARCHAR(50) CHECK (category IN (
+    'salary', 
+    'bonus', 
+    'interest', 
+    'dividend', 
+    'rental income', 
+    'business income', 
+    'investment', 
+    'groceries', 
+    'utilities', 
+    'rent/mortgage', 
+    'transportation', 
+    'education', 
+    'healthcare', 
+    'entertainment', 
+    'subscriptions', 
+    'travel', 
+    'savings', 
+    'emergency fund', 
+    'retirement',
+    'clothing', 
+    'dining', 
+    'household supplies', 
+    'charity', 
+    'debt repayment'
+    )),
+    description TEXT DEFAULT '',
+    recurring BOOLEAN DEFAULT FALSE,
+    recurring_frequency VARCHAR(20) CHECK (recurring_frequency IN ('one-time', 'daily', 'weekly', 'monthly', 'yearly')) NOT NULL DEFAULT 'one-time',
+    risk_level VARCHAR(10) CHECK (risk_level IN ('n/a', 'low', 'moderate', 'high')) NOT NULL DEFAULT 'n/a',
+    is_planned BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT NOW()
+);
