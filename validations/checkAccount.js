@@ -10,7 +10,7 @@ const checkUsernameProvided = (req, res, next) => {
     if (req.body?.username) {
         return next()
     } else {
-        res.status(400).json({ error: "Username is required!" })
+        return res.status(400).json({ error: "Username is required!" })
     }
 }
 
@@ -18,12 +18,12 @@ const checkUsernameExists = async (req, res, next) => {
     try {
         const registeredAccount = await getOneAccountByUserName(req.body?.username)
         if (registeredAccount) {
-            res.status(409).json({ error: "Account already registered with this username." })
+            return res.status(409).json({ error: "Account already registered with this username." })
         } else {
-            next()
+            return next()
         }
     } catch (error) {
-        res.status(500).json({ error: "Internal Server Error at checkUsernameExists." })
+        return res.status(500).json({ error: "Internal Server Error at checkUsernameExists." })
     }
 }
 
@@ -35,12 +35,12 @@ const checkUsernameExistsOtherThanSelf = async (req, res, next) => {
         }
         const registeredAccount = await getOneAccountByUserName(req.body?.username)
         if (registeredAccount?.account_id === Number(account_id) || !registeredAccount) {
-            next()
+            return next()
         } else {
             res.status(409).json({ error: "Account already registered with this username." })
         }
     } catch (error) {
-        res.status(500).json({ error: "Internal Server Error at checkUsernameExistsOtherThanSelf." })
+        return res.status(500).json({ error: "Internal Server Error at checkUsernameExistsOtherThanSelf." })
     }
 }
 
@@ -48,7 +48,7 @@ const checkEmailProvided = (req, res, next) => {
     if (req.body?.email) {
         return next()
     } else {
-        res.status(400).json({ error: "Email is required!" })
+        return res.status(400).json({ error: "Email is required!" })
     }
 }
 
@@ -56,12 +56,12 @@ const checkEmailExists = async (req, res, next) => {
     try {
         const registeredAccount = await getOneAccountByEmail(req.body?.email)
         if (registeredAccount?.email) {
-            res.status(409).json({ error: "Account already registered with this address." })
+            return res.status(409).json({ error: "Account already registered with this address." })
         } else {
-            next()
+            return next()
         }
     } catch (error) {
-        res.status(500).json({ error: "Internal Server Error at checkEmailExists." })
+        return res.status(500).json({ error: "Internal Server Error at checkEmailExists." })
     }
 }
 
@@ -73,12 +73,12 @@ const checkEmailExistsOtherThanSelf = async (req, res, next) => {
         }
         const registeredAccount = await getOneAccountByEmail(req.body?.email)
         if (registeredAccount?.account_id === Number(account_id) || !registeredAccount) {
-            next()
+            return next()
         } else {
             res.status(409).json({ error: "Account already registered with this email." })
         }
     } catch (error) {
-        res.status(500).json({ error: "Internal Server Error at checkEmailExistsOtherThanSelf." })
+        return res.status(500).json({ error: "Internal Server Error at checkEmailExistsOtherThanSelf." })
     }
 }
 
@@ -86,7 +86,7 @@ const checkPasswordProvided = (req, res, next) => {
     if (req.body?.password) {
         return next()
     } else {
-        res.status(400).json({ error: "Password is required!" })
+        return res.status(400).json({ error: "Password is required!" })
     }
 }
 
@@ -94,7 +94,7 @@ const checkNewPasswordProvided = (req, res, next) => {
     if (req.body?.newPassword) {
         return next()
     } else {
-        res.status(400).json({ error: "New password is required!" })
+        return res.status(400).json({ error: "New password is required!" })
     }
 }
 
@@ -106,10 +106,10 @@ const checkValidUsername = async (req, res, next) => {
         if (allUsernames.includes(username)) {
             return next()
         } else {
-            res.status(400).json({ error: "Invalid username provided." })
+            return res.status(400).json({ error: "Invalid username provided." })
         }
     } catch (error) {
-        res.status(500).json({ error: "Internal Server Error at checkValidUsername." })
+        return res.status(500).json({ error: "Internal Server Error at checkValidUsername." })
     }
 }
 
@@ -124,10 +124,10 @@ const checkAccountIndex = async (req, res, next) => {
         if (ids.includes(Number(account_id))) {
             return next()
         } else {
-            res.status(400).json({ error: "Account ID does not exist." })
+            return res.status(400).json({ error: "Account ID does not exist." })
         }
     } catch (error) {
-        res.status(500).json({ error: "Internal Server Error at checkAccountIndex." })
+        return res.status(500).json({ error: "Internal Server Error at checkAccountIndex." })
     }
 }
 
@@ -154,29 +154,33 @@ const checkEmailFormat = (req, res, next) => {
 const checkFirstnameFormat = (req, res, next) => {
     const nameRegex = /^[a-zA-Z-']+$/
     const firstname = req.body?.firstname
-
-    if (!firstname || (nameRegex.test(firstname) && firstname.length >= 2 && firstname.length <= 50 && !reservedUsernames.has(firstname.toLowerCase()))) {
-        return next()
-    } else {
-        res.status(400).json({
-            error: `Firstname must contain only letters, apostrophes, or hyphens, ` +
-                `and must be between 2 and 50 characters long!`
-        })
+    if (firstname) {
+        if (!firstname || (nameRegex.test(firstname) && firstname.length >= 2 && firstname.length <= 50 && !reservedUsernames.has(firstname.toLowerCase()))) {
+            return next()
+        } else {
+            return res.status(400).json({
+                error: `Firstname must contain only letters, apostrophes, or hyphens, ` +
+                    `and must be between 2 and 50 characters long!`
+            })
+        }
     }
+    return next()
 }
 
 const checkLastnameFormat = (req, res, next) => {
     const nameRegex = /^[a-zA-Z-']+$/
     const lastname = req.body?.lastname
-
-    if (!lastname || (nameRegex.test(lastname) && lastname.length >= 2 && lastname.length <= 50 && !reservedUsernames.has(lastname.toLowerCase()))) {
-        return next()
-    } else {
-        res.status(400).json({
-            error: `Lastname must contain only letters, apostrophes, or hyphens, ` +
-                `and must be between 2 and 50 characters long!`
-        })
+    if (lastname) {
+        if (!lastname || (nameRegex.test(lastname) && lastname.length >= 2 && lastname.length <= 50 && !reservedUsernames.has(lastname.toLowerCase()))) {
+            return next()
+        } else {
+            return res.status(400).json({
+                error: `Lastname must contain only letters, apostrophes, or hyphens, ` +
+                    `and must be between 2 and 50 characters long!`
+            })
+        }
     }
+    return next()
 }
 
 const checkUsernameValidity = (req, res, next) => {
@@ -211,18 +215,20 @@ const checkDobFormat = (req, res, next) => {
     const dobRegex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/
     const dob = req.body?.dob
 
-    if (!dob || !dobRegex.test(dob)) {
-        return res.status(400).json({ error: "Date of birth must be in the format ##/##/#### or #/#/####" })
-    }
+    if (dob) {
+        if (!dob || !dobRegex.test(dob)) {
+            return res.status(400).json({ error: "Date of birth must be in the format ##/##/#### or #/#/####" })
+        }
 
-    const [, month, day, year] = dob.match(dobRegex)
-    const dobDate = new Date(`${year}-${month}-${day}`)
-    const today = new Date()
-    const minDob = new Date()
-    minDob.setFullYear(minDob.getFullYear() - 100)
+        const [, month, day, year] = dob.match(dobRegex)
+        const dobDate = new Date(`${year}-${month}-${day}`)
+        const today = new Date()
+        const minDob = new Date()
+        minDob.setFullYear(minDob.getFullYear() - 100)
 
-    if (dobDate < minDob || dobDate > today) {
-        return res.status(400).json({ error: "Date of birth must be within the last 100 years and cannot be in the future." })
+        if (dobDate < minDob || dobDate > today) {
+            return res.status(400).json({ error: "Date of birth must be within the last 100 years and cannot be in the future." })
+        }
     }
 
     return next()
@@ -255,7 +261,7 @@ const checkPasswordStrength = (passwordField) => (req, res, next) => {
         return res.status(400).json({ error: "Password must not exceed 128 characters." })
     }
 
-    next()
+    return next()
 }
 
 
