@@ -182,7 +182,7 @@ accounts.post(
                         email: createdAccount.email,
                         username: createdAccount.username
                     },
-                    JWT_SECRET,
+                    process.env.JWT_SECRET,
                     { expiresIn: '30m' }
                 )
 
@@ -353,7 +353,7 @@ accounts.post(
                     email: guestAccount.email,
                     username: guestAccount.username
                 },
-                JWT_SECRET,
+                process.env.JWT_SECRET,
                 { expiresIn: '30m' }
             )
 
