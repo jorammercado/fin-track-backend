@@ -257,16 +257,18 @@ accounts.put(
                 delete updatedAccount.password_hashed
                 res.status(200).json(updatedAccount)
 
-                const mailOptions = createMailOptions(
-                    updatedAccount.email,
-                    'Security Update',
-                    `Your account has been recently updated. If this wasn\'t you, ` +
-                    `please contact support and/or update your password.`
-                )
+                if (account_id !== '1') {
+                    const mailOptions = createMailOptions(
+                        updatedAccount.email,
+                        'Security Update',
+                        `Your account has been recently updated. If this wasn\'t you, ` +
+                        `please contact support and/or update your password.`
+                    )
 
-                transporter.sendMail(mailOptions)
-                    .then(info => console.log('Confirmation email sent:', info.response))
-                    .catch(err => console.error('Error sending email:', err))
+                    transporter.sendMail(mailOptions)
+                        .then(info => console.log('Confirmation email sent:', info.response))
+                        .catch(err => console.error('Error sending email:', err))
+                }
             }
             else {
                 return res.status(404).json({
@@ -292,6 +294,10 @@ accounts.put(
         try {
             const { account_id } = req.params
             const { password, newPassword } = req.body
+
+            if (account_id === '1') {
+                return res.status(401).json({ error: "Guest account password cannot be updated!" })
+            }
 
             const account = await getOneAccount(account_id)
             if (!account) {
