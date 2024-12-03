@@ -133,22 +133,24 @@ const checkAccountID = async (req, res, next) => {
     }
 }
 
-const validateTransactionOwnership = async (transaction_id, account_id) => {
+const validateTransactionOwnership = async (req, res, next) => {
+    const { account_id, transaction_id } = req.params
+
     try {
         const oneTransaction = await getOneTransaction(transaction_id)
-        
-        if (oneTransaction.error || oneTransaction.err) {
-            return { status: 500, error: oneTransaction.error || oneTransaction.err }
+
+        if (!oneTransaction) {
+            return res.status(404).json({ error: "Transaction not found." })
         }
 
-        if (!oneTransaction || oneTransaction.account_id !== account_id) {
-            return { status: 404, error: "Transaction not found for this account" }
+        if (oneTransaction.account_id !== account_id) {
+            return res.status(404).json({ error: "Transaction not found for this account." })
         }
 
-        return { status: 200, transaction: oneTransaction }
+        return next()
     } catch (err) {
         console.error("Error validating transaction ownership:", err)
-        return { status: 500, error: "Internal server error during validation" }
+        return res.status(500).json({ error: "Internal server error during validation." })
     }
 }
 
