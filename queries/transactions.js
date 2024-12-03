@@ -72,7 +72,7 @@ const createTransaction = async (transactionData) => {
             [
                 account_id,
                 transaction_type,
-                amount,
+                Number(amount),
                 category,
                 description,
                 recurring,
@@ -97,7 +97,7 @@ const createTransaction = async (transactionData) => {
         }
 
         if (balanceColumn) {
-            const updateValue = transaction_type === 'expense' ? -amount : amount
+            const updateValue = transaction_type === 'expense' ? -Number(amount) : Number(amount)
             const updatedData = {
                 [balanceColumn]: updateValue
             }
@@ -141,7 +141,7 @@ const updateTransaction = async (transaction_id, transactionData) => {
             [
                 account_id,
                 transaction_type,
-                amount,
+                Number(amount),
                 category,
                 description,
                 recurring,

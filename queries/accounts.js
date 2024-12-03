@@ -128,9 +128,9 @@ const updateAccount = async (account_id, account) => {
                 dob,
                 username,
                 email,
-                checking_account,
-                savings_account,
-                investments,
+                Number(checking_account),
+                Number(savings_account),
+                Number(investments),
                 account_id
             ]
         )
