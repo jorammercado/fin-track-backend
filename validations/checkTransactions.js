@@ -133,6 +133,25 @@ const checkAccountID = async (req, res, next) => {
     }
 }
 
+const validateTransactionOwnership = async (transaction_id, account_id) => {
+    try {
+        const oneTransaction = await getOneTransaction(transaction_id)
+        
+        if (oneTransaction.error || oneTransaction.err) {
+            return { status: 500, error: oneTransaction.error || oneTransaction.err }
+        }
+
+        if (!oneTransaction || oneTransaction.account_id !== account_id) {
+            return { status: 404, error: "Transaction not found for this account" }
+        }
+
+        return { status: 200, transaction: oneTransaction }
+    } catch (err) {
+        console.error("Error validating transaction ownership:", err)
+        return { status: 500, error: "Internal server error during validation" }
+    }
+}
+
 
 module.exports = {
     checkAmountProvided,
@@ -141,5 +160,6 @@ module.exports = {
     checkRecurringDetails,
     checkRiskLevelProvided,
     checkTransactionID,
-    checkAccountID
+    checkAccountID,
+    validateTransactionOwnership
 }

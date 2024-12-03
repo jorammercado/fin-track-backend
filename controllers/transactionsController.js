@@ -14,7 +14,8 @@ const { checkAmountProvided,
     checkRecurringDetails,
     checkRiskLevelProvided,
     checkTransactionID,
-    checkAccountID
+    checkAccountID,
+    validateTransactionOwnership
 } = require("../validations/checkTransactions.js")
 
 // get all
