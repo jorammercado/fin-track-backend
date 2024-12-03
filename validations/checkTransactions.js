@@ -29,9 +29,34 @@ const checkTransactionTypeProvided = (req, res, next) => {
     return next()
 }
 
+const checkCategoryProvided = (req, res, next) => {
+    const { category } = req.body
+
+    if (!category) {
+        return res.status(400).json({ error: "Category is required!" })
+    }
+
+    const allowedCategories = [
+        'salary', 'bonus', 'interest', 'dividend', 'rental income',
+        'business income', 'investment', 'groceries', 'utilities',
+        'rent/mortgage', 'transportation', 'education', 'healthcare',
+        'entertainment', 'subscriptions', 'travel', 'savings',
+        'emergency fund', 'retirement', 'clothing', 'dining',
+        'household supplies', 'charity', 'debt repayment'
+    ]
+
+    if (!allowedCategories.includes(category)) {
+        return res.status(400).json({ error: `Invalid category: ${category}. Allowed values are: ${allowedCategories.join(', ')}` })
+    }
+
+    return next()
+}
+
+
 
 
 module.exports = {
     checkAmountProvided,
-    checkTransactionTypeProvided
+    checkTransactionTypeProvided,
+    checkCategoryProvided
 }
