@@ -117,5 +117,35 @@ transactions.post("/", checkAccountID,
 )
 
 // update
+transactions.put("/:transaction_id",
+    checkAccountID,
+    checkTransactionID,
+    validateTransactionOwnership,
+    checkAmountProvided,
+    checkTransactionTypeProvided,
+    checkCategoryProvided,
+    checkRecurringDetails,
+    checkRiskLevelProvided,
+    async (req, res) => {
+        const { transaction_id } = req.params
+        const transactionToBeUpdated = req.body
+
+        try {
+            const updatedTransaction = await updateTransaction(transaction_id, transactionToBeUpdated)
+
+            if (!updatedTransaction) {
+                return res.status(404).json({ error: "Transaction not found or no changes were made." })
+            }
+
+            return res.status(200).json(updatedTransaction)
+
+        } catch (error) {
+            console.error("Error updating transaction:", error)
+            return res.status(500).json({
+                error: `Internal server error while updating the transaction.`
+            })
+        }
+    }
+)
 
 module.exports = transactions
