@@ -1,4 +1,5 @@
 const { getOneTransaction } = require("../queries/transactions")
+const { getOneAccount } = require("../queries/accounts")
 
 const checkAmountProvided = (req, res, next) => {
     const { amount } = req.body
@@ -97,8 +98,8 @@ const checkTransactionID = async (req, res, next) => {
 
     try {
         const transaction = await getOneTransaction(transaction_id)
-        
-        if (!transaction || transaction?.error) {
+
+        if (!transaction || transaction?.error || transaction?.err) {
             return res.status(404).json({ error: "Transaction not found." })
         }
 
@@ -109,6 +110,26 @@ const checkTransactionID = async (req, res, next) => {
     }
 }
 
+const checkAccountID = async (req, res, next) => {
+    const { account_id } = req.params
+
+    if (!account_id || isNaN(Number(account_id)) || Number(account_id) <= 0) {
+        return res.status(400).json({ error: "Invalid or missing account ID. It must be a positive number." })
+    }
+
+    try {
+        const account = await getOneAccount(account_id)
+
+        if (!account || account?.err || account?.error) {
+            return res.status(404).json({ error: "Account not found." })
+        }
+
+        return next()
+    } catch (err) {
+        console.error(`Error retrieving account: ${err}`)
+        return res.status(500).json({ error: "Internal Server Error while validating account ID." })
+    }
+}
 
 
 module.exports = {
@@ -117,5 +138,6 @@ module.exports = {
     checkCategoryProvided,
     checkRecurringDetails,
     checkRiskLevelProvided,
-    checkTransactionID
+    checkTransactionID,
+    checkAccountID
 }
