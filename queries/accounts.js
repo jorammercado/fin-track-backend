@@ -108,13 +108,13 @@ const updateAccount = async (account_id, account) => {
         } = account
         const updatedAccount = await db.one(
             `UPDATE accounts SET 
-                firstname=$1,
-                lastname=$2, 
-                profile_img=$3,
-                about=$4, 
-                dob=$5,
-                username=$6,
-                email=$7,
+                firstname = COALESCE($1, firstname),
+                lastname = COALESCE($2, lastname), 
+                profile_img = COALESCE($3, profile_img),
+                about = COALESCE($4, about), 
+                dob = COALESCE($5, dob),
+                username = COALESCE($6, username),
+                email = COALESCE($7, email),
                 checking_account = COALESCE($8, checking_account),
                 savings_account = COALESCE($9, savings_account),
                 investments = COALESCE($10, investments)

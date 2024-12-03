@@ -46,6 +46,7 @@ const deleteTransaction = async (transaction_id) => {
     }
 }
 
+const { updateAccount } = require("../queries/accounts")
 const createTransaction = async (transactionData) => {
     const {
         account_id,
@@ -81,6 +82,28 @@ const createTransaction = async (transactionData) => {
                 created_at
             ]
         )
+
+        let balanceColumn
+        if (transaction_type === 'income') {
+            balanceColumn = 'checking_account'
+        } else if (transaction_type === 'expense') {
+            balanceColumn = 'checking_account'
+        } else if (transaction_type === 'investment') {
+            if (['retirement', 'savings', 'emergency fund'].includes(category)) {
+                balanceColumn = 'savings_account'
+            } else {
+                balanceColumn = 'investments'
+            }
+        }
+
+        if (balanceColumn) {
+            const updateValue = transaction_type === 'expense' ? -amount : amount
+            const updatedData = {
+                [balanceColumn]: updateValue
+            }
+            await updateAccount(account_id, updatedData)
+        }
+
         return newTransaction
     } catch (err) {
         console.error(err)
