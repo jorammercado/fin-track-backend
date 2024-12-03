@@ -115,9 +115,9 @@ const updateAccount = async (account_id, account) => {
                 dob = COALESCE($5, dob),
                 username = COALESCE($6, username),
                 email = COALESCE($7, email),
-                checking_account = COALESCE($8, checking_account),
-                savings_account = COALESCE($9, savings_account),
-                investments = COALESCE($10, investments)
+                checking_account = checking_account + COALESCE($8, 0),
+                savings_account = savings_account + COALESCE($9, 0),
+                investments = investments + COALESCE($10, 0)
             WHERE account_id=$11 
             RETURNING *`,
             [
@@ -128,9 +128,9 @@ const updateAccount = async (account_id, account) => {
                 dob,
                 username,
                 email,
-                Number(checking_account),
-                Number(savings_account),
-                Number(investments),
+                checking_account !== undefined ? Number(checking_account) : 0,
+                savings_account !== undefined ? Number(savings_account) : 0,
+                investments !== undefined ? Number(investments) : 0,
                 account_id
             ]
         )
