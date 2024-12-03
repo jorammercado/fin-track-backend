@@ -112,7 +112,7 @@ const updateTransaction = async (transaction_id, transactionData) => {
                 recurring = COALESCE($6, recurring),
                 recurring_frequency = COALESCE($7, recurring_frequency),
                 risk_level = COALESCE($8, risk_level),
-                is_planned = COALESCE($9, is_planned),
+                is_planned = COALESCE($9, is_planned)
             WHERE transaction_id = $10
             RETURNING *`,
             [

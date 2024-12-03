@@ -94,12 +94,45 @@ const deleteAccountByAccountID = async (account_id) => {
 
 const updateAccount = async (account_id, account) => {
     try {
-        const { firstname, lastname, profile_img, about, dob, username, email } = account
+        const {
+            firstname,
+            lastname,
+            profile_img,
+            about,
+            dob,
+            username,
+            email,
+            checking_account,
+            savings_account,
+            investments
+        } = account
         const updatedAccount = await db.one(
-            `UPDATE accounts SET firstname=$1, lastname=$2, ` +
-            `profile_img=$3, about=$4, dob=$5, username=$6, email=$7 WHERE account_id=$8 ` +
-            `RETURNING *`,
-            [firstname, lastname, profile_img, about, dob, username, email, account_id]
+            `UPDATE accounts SET 
+                firstname=$1,
+                lastname=$2, 
+                profile_img=$3,
+                about=$4, 
+                dob=$5,
+                username=$6,
+                email=$7,
+                checking_account = COALESCE($8, checking_account),
+                savings_account = COALESCE($9, savings_account),
+                investments = COALESCE($10, investments)
+            WHERE account_id=$11 
+            RETURNING *`,
+            [
+                firstname,
+                lastname,
+                profile_img,
+                about,
+                dob,
+                username,
+                email,
+                checking_account,
+                savings_account,
+                investments,
+                account_id
+            ]
         )
         return updatedAccount
     }
