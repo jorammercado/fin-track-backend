@@ -68,6 +68,32 @@ transactions.get("/:transaction_id",
     })
 
 // delete
+transactions.delete("/:transaction_id",
+    checkAccountID,
+    checkTransactionID,
+    validateTransactionOwnership,
+    async (req, res) => {
+        const { transaction_id } = req.params
+        try {
+            const deletedTransaction = await deleteTransaction(transaction_id)
+
+            if (deletedTransaction.error || deletedTransaction.err) {
+                return res.status(500).json({ error: deletedTransaction.error || deletedTransaction.err })
+            }
+
+            if (!deletedTransaction) {
+                return res.status(404).json({ error: "Transaction not found" })
+            }
+
+            return res.status(200).json(deletedTransaction)
+        } catch (error) {
+            console.error("Error in delete controller path for transactions:", error)
+            return res.status(500).json({
+                error: `${error} Error in delete controller path for transactions.`
+            })
+        }
+    })
+
 
 // create
 
