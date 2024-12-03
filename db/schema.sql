@@ -7,7 +7,7 @@ CREATE TABLE accounts (
     account_id SERIAL PRIMARY KEY,
     username VARCHAR(50) NOT NULL,
     firstname VARCHAR(50) NOT NULL DEFAULT 'Unknown First Name',
-    lastname VARCHAR(50) NOT NULL DEFAULt 'Unknown Last Name',
+    lastname VARCHAR(50) NOT NULL DEFAULT 'Unknown Last Name',
     email VARCHAR(100) NOT NULL,
     password_hashed VARCHAR(255) NOT NULL,
     profile_img TEXT DEFAULT 'Profile Image URL',
@@ -15,7 +15,10 @@ CREATE TABLE accounts (
     dob VARCHAR(20) DEFAULT '00/0/0000',
     registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     mfa_otp VARCHAR(255),
-    mfa_otp_expiration TIMESTAMP );
+    mfa_otp_expiration TIMESTAMP,
+    checking_account DECIMAL(15, 2) DEFAULT 0.00,  
+    savings_account DECIMAL(15, 2) DEFAULT 0.00,  
+    investments DECIMAL(15, 2) DEFAULT 0.00);
 
     CREATE TABLE login_history_icap_bdgt (
     history_id SERIAL PRIMARY KEY,
