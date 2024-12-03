@@ -16,6 +16,12 @@ const getOneTransaction = async (transaction_id) => {
     try {
         const oneTransaction = await db.oneOrNone(`SELECT * FROM financial_transactions WHERE transaction_id=$1`,
             [transaction_id])
+
+        if (!oneTransaction) {
+            console.error(`Transaction with id ${transaction_id} not found`)
+            return { error: `Transaction with id ${transaction_id} not found` }
+        }
+
         return oneTransaction
     }
     catch (err) {
