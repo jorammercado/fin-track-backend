@@ -52,11 +52,31 @@ const checkCategoryProvided = (req, res, next) => {
     return next()
 }
 
+const checkRecurringDetails = (req, res, next) => {
+    const { recurring, recurring_frequency } = req.body
 
+    if (recurring) {
+        const allowedFrequencies = ['daily', 'weekly', 'monthly', 'yearly']
+        if (!recurring_frequency || !allowedFrequencies.includes(recurring_frequency)) {
+            return res.status(400).json({ 
+                error: `Recurring frequency is required when recurring is true! Allowed values are: ${allowedFrequencies.join(', ')}` 
+            })
+        }
+    }
+
+    if (!recurring && recurring_frequency && recurring_frequency !== 'one-time') {
+        return res.status(400).json({ 
+            error: `Recurring frequency should be 'one-time' when the transaction is not recurring.` 
+        })
+    }
+
+    return next()
+}
 
 
 module.exports = {
     checkAmountProvided,
     checkTransactionTypeProvided,
-    checkCategoryProvided
+    checkCategoryProvided,
+    checkRecurringDetails
 }
