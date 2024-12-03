@@ -29,7 +29,7 @@ const deleteTransaction = async (transaction_id) => {
         const deletedTransaction = await db.oneOrNone(`DELETE FROM financial_transactions WHERE transaction_id=$1 RETURNING *`,
             [transaction_id])
         if (deletedTransaction) {
-            return deletedTransaction;
+            return deletedTransaction
         } else {
             console.error('Transaction not found')
             return { error: 'Transaction not found' }
@@ -40,8 +40,51 @@ const deleteTransaction = async (transaction_id) => {
     }
 }
 
+const createTransaction = async (transactionData) => {
+    const {
+        account_id,
+        transaction_type,
+        amount,
+        category,
+        description = '',
+        recurring = false,
+        recurring_frequency = 'one-time',
+        risk_level = 'n/a',
+        is_planned = false,
+        created_at = new Date()
+    } = transactionData
+
+    try {
+        const newTransaction = await db.one(
+            `INSERT INTO financial_transactions (
+                account_id, transaction_type, amount, category, description,
+                recurring, recurring_frequency, risk_level, is_planned, created_at
+            ) VALUES (
+                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10
+            ) RETURNING *`,
+            [
+                account_id,
+                transaction_type,
+                amount,
+                category,
+                description,
+                recurring,
+                recurring_frequency,
+                risk_level,
+                is_planned,
+                created_at
+            ]
+        )
+        return newTransaction
+    } catch (err) {
+        console.error(err)
+        return { err: `${err}, sql query error - create a transaction` }
+    }
+}
+
 module.exports = {
     getAllTransactions,
     getOneTransaction,
-    deleteTransaction
+    deleteTransaction,
+    createTransaction
 }
