@@ -94,8 +94,27 @@ transactions.delete("/:transaction_id",
         }
     })
 
-
 // create
+transactions.post("/", checkAccountID,
+    checkAmountProvided,
+    checkTransactionTypeProvided,
+    checkCategoryProvided,
+    checkRecurringDetails,
+    checkRiskLevelProvided, async (req, res) => {
+        try {
+            const transactionData = req.body
+            const newTransaction = await createTransaction(transactionData)
+            return res.status(201).json(newTransaction)
+        }
+        catch (error) {
+            console.error("Error creating new transaction:", error)
+            return res.status(500).json({
+                error: `Internal server error ` +
+                    `while creating the transaction.`
+            })
+        }
+    }
+)
 
 // update
 
