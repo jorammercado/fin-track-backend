@@ -8,8 +8,10 @@ const checkAmountProvided = (req, res, next) => {
         return res.status(400).json({ error: "Amount is required!" })
     }
 
-    if (typeof amount !== 'number') {
-        return res.status(400).json({ error: "Amount must be a number." })
+    const parsedAmount = parseFloat(amount)
+
+    if (isNaN(parsedAmount)) {
+        return res.status(400).json({ error: "Amount must be a valid number." })
     }
 
     return next()
