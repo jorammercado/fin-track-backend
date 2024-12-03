@@ -24,7 +24,7 @@ const checkTransactionTypeProvided = (req, res, next) => {
         return res.status(400).json({ error: "Transaction type is required!" })
     }
 
-    const allowedTypes = ['income', 'expense', 'investment']
+    const allowedTypes = ['income', 'expense', 'investment', 'deposit']
     if (!allowedTypes.includes(transaction_type)) {
         return res.status(400).json({ error: `Invalid transaction type: ${transaction_type}. Allowed values are: ${allowedTypes.join(', ')}` })
     }
@@ -45,7 +45,8 @@ const checkCategoryProvided = (req, res, next) => {
         'rent/mortgage', 'transportation', 'education', 'healthcare',
         'entertainment', 'subscriptions', 'travel', 'savings',
         'emergency fund', 'retirement', 'clothing', 'dining',
-        'household supplies', 'charity', 'debt repayment'
+        'household supplies', 'charity', 'debt repayment', 'other',
+        'wages', 'account funding', 'loan disbursement', 'checking'
     ]
 
     if (!allowedCategories.includes(category)) {
