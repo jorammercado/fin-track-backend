@@ -73,10 +73,26 @@ const checkRecurringDetails = (req, res, next) => {
     return next()
 }
 
+const checkRiskLevelProvided = (req, res, next) => {
+    const { risk_level } = req.body
+
+    if (!risk_level) {
+        req.body.risk_level = 'n/a' 
+    }
+
+    const allowedRiskLevels = ['n/a', 'low', 'moderate', 'high']
+    if (!allowedRiskLevels.includes(req.body.risk_level)) {
+        return res.status(400).json({ error: `Invalid risk level: ${risk_level}. Allowed values are: ${allowedRiskLevels.join(', ')}` })
+    }
+
+    return next()
+}
+
 
 module.exports = {
     checkAmountProvided,
     checkTransactionTypeProvided,
     checkCategoryProvided,
-    checkRecurringDetails
+    checkRecurringDetails,
+    checkRiskLevelProvided
 }
