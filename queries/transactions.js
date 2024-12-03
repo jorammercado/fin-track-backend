@@ -82,9 +82,63 @@ const createTransaction = async (transactionData) => {
     }
 }
 
+const updateTransaction = async (transaction_id, transactionData) => {
+    const {
+        account_id,
+        transaction_type,
+        amount,
+        category,
+        description,
+        recurring,
+        recurring_frequency,
+        risk_level,
+        is_planned,
+    } = transactionData
+
+    try {
+        const updatedTransaction = await db.oneOrNone(
+            `UPDATE financial_transactions SET
+                account_id = COALESCE($1, account_id),
+                transaction_type = COALESCE($2, transaction_type),
+                amount = COALESCE($3, amount),
+                category = COALESCE($4, category),
+                description = COALESCE($5, description),
+                recurring = COALESCE($6, recurring),
+                recurring_frequency = COALESCE($7, recurring_frequency),
+                risk_level = COALESCE($8, risk_level),
+                is_planned = COALESCE($9, is_planned),
+            WHERE transaction_id = $10
+            RETURNING *`,
+            [
+                account_id,
+                transaction_type,
+                amount,
+                category,
+                description,
+                recurring,
+                recurring_frequency,
+                risk_level,
+                is_planned,
+                transaction_id
+            ]
+        )
+
+        if (updatedTransaction) {
+            return updatedTransaction
+        } else {
+            console.error('Transaction not found')
+            return { error: 'Transaction not found' }
+        }
+    } catch (err) {
+        console.error(err)
+        return { err: `${err}, sql query error - update a transaction` }
+    }
+}
+
 module.exports = {
     getAllTransactions,
     getOneTransaction,
     deleteTransaction,
-    createTransaction
+    createTransaction,
+    updateTransaction
 }
