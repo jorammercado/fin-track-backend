@@ -143,7 +143,7 @@ const validateTransactionOwnership = async (req, res, next) => {
             return res.status(404).json({ error: "Transaction not found." })
         }
 
-        if (oneTransaction.account_id !== account_id) {
+        if (oneTransaction.account_id !== Number(account_id)) {
             return res.status(404).json({ error: "Transaction not found for this account." })
         }
 

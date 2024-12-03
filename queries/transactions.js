@@ -1,4 +1,5 @@
 const db = require(`../db/dbConfig.js`)
+const { updateAccount } = require("../queries/accounts")
 
 const getAllTransactions = async (account_id) => {
     try {
@@ -34,19 +35,48 @@ const deleteTransaction = async (transaction_id) => {
     try {
         const deletedTransaction = await db.oneOrNone(`DELETE FROM financial_transactions WHERE transaction_id=$1 RETURNING *`,
             [transaction_id])
-        if (deletedTransaction) {
-            return deletedTransaction
-        } else {
+
+        if (!deletedTransaction) {
             console.error('Transaction not found')
             return { error: 'Transaction not found' }
         }
+
+        const { account_id, transaction_type, amount, category } = deletedTransaction
+        let balanceColumn
+        if (transaction_type === 'income' || transaction_type === 'expense') {
+            balanceColumn = 'checking_account'
+        } else if (transaction_type === 'investment') {
+            if (['retirement', 'savings', 'emergency fund'].includes(category)) {
+                balanceColumn = 'savings_account'
+            } else {
+                balanceColumn = 'investments'
+            }
+        } else if (transaction_type === 'deposit') {
+            if (category === 'savings') {
+                balanceColumn = 'savings_account'
+            } else {
+                balanceColumn = 'checking_account'
+            }
+        }
+
+        if (balanceColumn) {
+            const updateValue = (transaction_type === 'expense' || transaction_type === 'investment')
+                ? -Number(amount)
+                : Number(amount)
+
+            const updatedData = {
+                [balanceColumn]: updateValue
+            }
+            await updateAccount(account_id, updatedData)
+        }
+
+        return deletedTransaction
     } catch (err) {
         console.error(err)
         return { err: `${err}, sql query error - delete a transaction` }
     }
 }
 
-const { updateAccount } = require("../queries/accounts")
 const createTransaction = async (transactionData) => {
     const {
         account_id,
@@ -93,6 +123,12 @@ const createTransaction = async (transactionData) => {
                 balanceColumn = 'savings_account'
             } else {
                 balanceColumn = 'investments'
+            }
+        } else if (transaction_type === 'deposit') {
+            if (category === 'savings') {
+                balanceColumn = 'savings_account'
+            } else {
+                balanceColumn = 'checking_account'
             }
         }
 

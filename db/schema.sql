@@ -31,7 +31,7 @@ CREATE TABLE financial_transactions (
     transaction_id SERIAL PRIMARY KEY,
     -- for development reasons use ON DELETE SET NULL instead of ON DELETE CASCADE
     account_id INTEGER REFERENCES accounts(account_id) ON DELETE SET NULL,
-    transaction_type VARCHAR(20) CHECK (transaction_type IN ('income', 'expense', 'investment')) NOT NULL,
+    transaction_type VARCHAR(20) CHECK (transaction_type IN ('income', 'expense', 'investment', 'deposit')) NOT NULL,
     amount DECIMAL(10, 2) NOT NULL,
     category VARCHAR(50) CHECK (category IN (
     'salary', 
@@ -57,7 +57,12 @@ CREATE TABLE financial_transactions (
     'dining', 
     'household supplies', 
     'charity', 
-    'debt repayment'
+    'debt repayment',
+    'other',
+    'wages',
+    'account funding',
+    'loan disbursement',
+    'checking' 
     )),
     description TEXT DEFAULT '',
     recurring BOOLEAN DEFAULT FALSE,
