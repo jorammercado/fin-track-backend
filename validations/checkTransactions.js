@@ -1,4 +1,4 @@
-
+const { getOneTransaction } = require("../queries/transactions")
 
 const checkAmountProvided = (req, res, next) => {
     const { amount } = req.body
@@ -58,15 +58,15 @@ const checkRecurringDetails = (req, res, next) => {
     if (recurring) {
         const allowedFrequencies = ['daily', 'weekly', 'monthly', 'yearly']
         if (!recurring_frequency || !allowedFrequencies.includes(recurring_frequency)) {
-            return res.status(400).json({ 
-                error: `Recurring frequency is required when recurring is true! Allowed values are: ${allowedFrequencies.join(', ')}` 
+            return res.status(400).json({
+                error: `Recurring frequency is required when recurring is true! Allowed values are: ${allowedFrequencies.join(', ')}`
             })
         }
     }
 
     if (!recurring && recurring_frequency && recurring_frequency !== 'one-time') {
-        return res.status(400).json({ 
-            error: `Recurring frequency should be 'one-time' when the transaction is not recurring.` 
+        return res.status(400).json({
+            error: `Recurring frequency should be 'one-time' when the transaction is not recurring.`
         })
     }
 
@@ -77,7 +77,7 @@ const checkRiskLevelProvided = (req, res, next) => {
     const { risk_level } = req.body
 
     if (!risk_level) {
-        req.body.risk_level = 'n/a' 
+        req.body.risk_level = 'n/a'
     }
 
     const allowedRiskLevels = ['n/a', 'low', 'moderate', 'high']
@@ -88,11 +88,34 @@ const checkRiskLevelProvided = (req, res, next) => {
     return next()
 }
 
+const checkTransactionID = async (req, res, next) => {
+    const { transaction_id } = req.params
+
+    if (!transaction_id || isNaN(Number(transaction_id)) || Number(transaction_id) <= 0) {
+        return res.status(400).json({ error: "Invalid or missing transaction ID. It must be a positive number." })
+    }
+
+    try {
+        const transaction = await getOneTransaction(transaction_id)
+        
+        if (!transaction || transaction?.error) {
+            return res.status(404).json({ error: "Transaction not found." })
+        }
+
+        return next()
+    } catch (err) {
+        console.error(`Error retrieving transaction: ${err}`)
+        return res.status(500).json({ error: "Internal Server Error while validating transaction ID." })
+    }
+}
+
+
 
 module.exports = {
     checkAmountProvided,
     checkTransactionTypeProvided,
     checkCategoryProvided,
     checkRecurringDetails,
-    checkRiskLevelProvided
+    checkRiskLevelProvided,
+    checkTransactionID
 }
