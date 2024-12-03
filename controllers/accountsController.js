@@ -39,7 +39,7 @@ const transporter = require('../email/emailTransporter.js')
 const OTP_EXPIRATION_MS = 3 * 60 * 1000
 
 const transactionsController = require("./transactionsController.js")
-// accounts.use("/:account_id/transactions", verifyToken, transactionsController)
+accounts.use("/:account_id/transactions", verifyToken, transactionsController)
 
 // start login 
 accounts.post(
