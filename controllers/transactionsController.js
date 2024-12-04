@@ -19,7 +19,7 @@ const { checkAmountProvided,
 } = require("../validations/checkTransactions.js")
 
 // get all
-transactions.get("/", checkAccountID, async (req, res) => {
+transactions.post("/", checkAccountID, async (req, res) => {
     const { account_id } = req.params
     try {
         const transactionsList = await getAllTransactions(account_id)
@@ -40,7 +40,7 @@ transactions.get("/", checkAccountID, async (req, res) => {
 })
 
 // get one
-transactions.get("/:transaction_id",
+transactions.post("/:transaction_id",
     checkAccountID,
     checkTransactionID,
     async (req, res) => {
