@@ -19,6 +19,11 @@ The iCapital Budgeter Backend Services provides the server-side logic and secure
 - **Email Verification**: An email verification link is sent upon account creation to confirm the user’s email address.
 - **Multi-Factor Authentication (MFA)**: MFA is implemented during login through a one-time passcode sent via email, adding an extra layer of security.
 
+### Financial Transactions Management
+- **Financial Transactions Table**: Stores information about user transactions, including deposits, income, expenses, and investments. This table allows users to track their financial activities in detail.
+- **Data Integration**: Transactions are integrated into the application, enabling the frontend to present income, expenses, and investments, and provide insights through visualizations.
+
+
 ### Email Notifications
 - **Account Updates**: Notifies users of important account updates, such as password changes or new logins from unfamiliar devices.
 - **Investment Alerts**: Periodic emails providing updates on investment recommendations and/or portfolio summaries based on changing market conditions.
