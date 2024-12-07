@@ -95,7 +95,7 @@ transactions.delete("/:transaction_id",
     })
 
 // create
-transactions.post("/", checkAccountID,
+transactions.post("/create", checkAccountID,
     checkAmountProvided,
     checkTransactionTypeProvided,
     checkCategoryProvided,
