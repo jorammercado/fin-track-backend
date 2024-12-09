@@ -2,7 +2,9 @@
 
 ## Description
 
-The iCapital Budgeter Backend Services provides the server-side logic and secure data management functionalities for the iCapital Budgeter application. It focuses on implementing secure user authentication, email verification, and notification services. This ensures users have a safe experience managing their financial information. As the project expands, additional services will be added.
+The iCapital Budgeter Backend Services power the iCapital Budgeter application by ensuring secure user authentication, seamless database management for accounts and financial transactions, and timely email notifications.
+
+---
 
 ## Tech Stack
 
@@ -10,23 +12,87 @@ The iCapital Budgeter Backend Services provides the server-side logic and secure
 - **Database**: PostgreSQL
 - **Security**: bcryptjs, jsonwebtoken
 - **Email Service**: nodemailer
+- **Testing**: Jest
 
 ## Features Implemented
 
 ### User Authentication and Security
-- **Sign Up/Login System**: Secure sign-up and login using hashed passwords.
-- **Password Security**: Strong password requirements enforced, with hashing for password storage using `bcryptjs`.
-- **Email Verification**: An email verification link is sent upon account creation to confirm the user’s email address.
-- **Multi-Factor Authentication (MFA)**: MFA is implemented during login through a one-time passcode sent via email, adding an extra layer of security.
+- **Sign Up/Login System**: Secure sign-up and login using hashed passwords, data validation and JWT tokens.
+- **Password Security**: Strong password requirements enforced, and extra security measures for password update.
+- **Multi-Factor Authentication (MFA)**: MFA is implemented during login through a one-time passcode (with a time limit) sent via email, adding an extra layer of security.
 
 ### Financial Transactions Management
 - **Financial Transactions Table**: Stores information about user transactions, including deposits, income, expenses, and investments. This table allows users to track their financial activities in detail.
 - **Data Integration**: Transactions are integrated into the application, enabling the frontend to present income, expenses, and investments, and provide insights through visualizations.
 
-
 ### Email Notifications
 - **Account Updates**: Notifies users of important account updates, such as password changes or new logins from unfamiliar devices.
-- **Investment Alerts**: Periodic emails providing updates on investment recommendations and/or portfolio summaries based on changing market conditions.
+
+---
+
+## API Routes
+### Accounts
+| Method | Endpoint                         | Description                                |
+|--------|----------------------------------|--------------------------------------------|
+| POST   | `/accounts/login-initiate`       | Start the login process by sending an OTP. |
+| POST   | `/accounts/verify-otp`           | Complete login by verifying OTP.           |
+| POST   | `/accounts`                      | Sign up a new user.                        |
+| DELETE | `/accounts/:account_id`          | Delete an account by ID.                   |
+| PUT    | `/accounts/:account_id`          | Update account details.                    |
+| PUT    | `/accounts/:account_id/password` | Update user password.                      |
+| POST   | `/accounts/guest-login`          | Login as a guest.                          |
+
+### Transactions
+| Method | Endpoint                                             | Description                                |
+|--------|------------------------------------------------------|--------------------------------------------|
+| POST   | `/accounts/:account_id/transactions/create`          | Create a transaction for an account.    |
+| POST   | `/accounts/:account_id/transactions/:transaction_id` | Get one transaction by ID.                 |
+| POST   | `/accounts/:account_id/transactions`                 | Get all transactions for an account.       |
+| DELETE | `/accounts/:account_id/transactions/:transaction_id` | Delete a transaction.                      |
+| PUT    | `/accounts/:account_id/transactions/:transaction_id` | Update a transaction.                      |
+
+---
+
+## Middleware Functions
+### Account Validations
+| Function                          | Description                                                                                          |
+|-----------------------------------|------------------------------------------------------------------------------------------------------|
+| `checkUsernameProvided`           | Ensures username is provided in the request body.                                                    |
+| `checkUsernameExists`             | When signing up, checks if user name is taken.                                                       |
+| `checkUsernameExistsOtherThanSelf`| When updating account, checks if user name is taken - unless its yours.                              |
+| `checkEmailProvided`              | Ensures email is provided in the request body.                                                       |
+| `checkEmailExists`                | When signing up, checks if email address is taken.                                                   |
+| `checkEmailExistsOtherThanSelf`   | When updating account, checks if email is taken - unless its yours.                                  |
+| `checkPasswordProvided`           | Ensures password is provided in the request body.                                                    |
+| `checkNewPasswordProvided`        | When updating password, ensures new password is provided in the request body.                        |
+| `checkValidUsername`              | Checks if username is in the database.                                                               |
+| `checkAccountIndex`               | Checks if account ID is in the database.                                                             |
+| `checkEmailFormat`                | Email format should be in example@domain.com format.                                                 |
+| `checkFirstnameFormat`            | Must contain only letters, apostrophes, or hyphens and be between 2 and 50 chars.                    |
+| `checkLastnameFormat`             | Must contain only letters, apostrophes, or hyphens and be between 2 and 50 chars.                    |
+| `checkUsernameValidity`           | Multiple checks to username in addition to containing only letters, numbers, hyphens, or underscores.|
+| `checkDobFormat`                  | Must be in the format ##/##/#### or #/#/#### format, be within last 100 years and not in future.     |
+| `checkPasswordStrength`           | Ensures password meets multiple strength criteria.                                                   |
+
+### Misc Utility
+| Function                        | Description                                                   |
+|---------------------------------|---------------------------------------------------------------|
+| `verifyToken`                   | Verifies valid JWT token.                                     |
+| `setDefaultAccountValues`       | For non essential fields, sets default values if non provided.|
+
+### Transaction Validations
+| Function                        | Description                                                          |
+|---------------------------------|----------------------------------------------------------------------|
+| `checkAmountProvided`           | Ensures transaction amount is provided and is a number.              |
+| `checkTransactionTypeProvided`  | Validates the transaction type and ensures its presence.              |
+| `checkCategoryProvided`         | Validates the transaction category and ensures its presence.          |
+| `checkRecurringDetails`         | Validates the transaction recurring details.                         |
+| `checkRiskLevelProvided`        | Validates the transaction risk level, sets default if none provided. |
+| `checkTransactionID`            | Ensures a transaction id is part of a transaction in the database.   |
+| `checkAccountID`                | Ensures an account id is part of an account in the database.         |
+| `validateTransactionOwnership`  | Verifies a given transaction belongs to a given account.             |
+
+---
 
 ## Deployed Server
 - **Backend Server hosted on Render**: [https://icapital-budgeter-backend-services.onrender.com/](https://icapital-budgeter-backend-services.onrender.com/)
@@ -94,6 +160,12 @@ This will run the backend services locally on the specified port.
 
 ## Next Steps
 Now that the backend services are running, you can proceed to connect the frontend application to the backend server locally on your machine.
+
+## Testing 
+Several unit tests were implemented using Jest, when making changes and ensuring continued functionality, such test can be run using:
+```bash
+npm test
+```
 
 ## License
 This project is licensed under the MIT License. See the [LICENSE](https://opensource.org/license/mit) file for details.
