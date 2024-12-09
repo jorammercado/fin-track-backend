@@ -14,6 +14,18 @@ The iCapital Budgeter Backend Services power the iCapital Budgeter application b
 - **Email Service**: nodemailer
 - **Testing**: Jest
 
+## Contents
+- [Features Implemented](#features-implemented)
+- [API Routes](#api-routes)
+- [Middleware Functions](#middleware-functions)
+- [Deployed Server](#deployed-server)
+- [GitHub Repositories](#github-repositories)
+- [Installation](#installation)
+- [Next Steps](#next-steps)
+- [Testing](#testing)
+- [License](#license)
+- [Contact](#contact)
+
 ## Features Implemented
 
 ### User Authentication and Security
