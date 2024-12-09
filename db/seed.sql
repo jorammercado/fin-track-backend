@@ -3,7 +3,7 @@
 INSERT INTO accounts (username, email, password_hashed) VALUES 
 ('guest_account', 'guest_account@domain.com', 'hashed_password');
 
-UPDATE accounts SET checking_account = 5315.00, savings_account = 7800.00, investments = 3500.00 WHERE username = 'guest_account';
+UPDATE accounts SET checking_account = 2815.00, savings_account = 7800.00, investments = 6000.00 WHERE username = 'guest_account';
 
 INSERT INTO financial_transactions (account_id, transaction_type, amount, category, description, recurring, recurring_frequency, risk_level, is_planned, created_at) VALUES
 (1, 'deposit', 5000.00, 'checking', 'Initial deposit into checking account', FALSE, 'one-time', 'n/a', TRUE, NOW()),

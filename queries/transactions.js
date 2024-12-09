@@ -127,6 +127,8 @@ const createTransaction = async (transactionData) => {
         } else if (transaction_type === 'deposit') {
             if (category === 'savings') {
                 balanceColumn = 'savings_account'
+            } else if (category === 'investment') {
+                balanceColumn = 'investments'
             } else {
                 balanceColumn = 'checking_account'
             }

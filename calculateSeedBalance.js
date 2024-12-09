@@ -156,6 +156,8 @@ const calculateBalances = (transactions) => {
         } else if (transaction_type === 'deposit') {
             if (category === 'savings') {
                 balanceColumn = 'savingsAccount'
+            } else if (category === 'investment') {
+                balanceColumn = 'investments'
             } else {
                 balanceColumn = 'checkingAccount'
             }
