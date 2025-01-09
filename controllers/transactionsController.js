@@ -1,13 +1,13 @@
-const express = require("express")
+const express = require('express')
 const transactions = express.Router({ mergeParams: true })
-const { getOneAccount } = require("../queries/accounts")
+const { getOneAccount } = require('../queries/accounts')
 
 const { getAllTransactions,
     getOneTransaction,
     deleteTransaction,
     createTransaction,
     updateTransaction
-} = require("../queries/transactions")
+} = require('../queries/transactions')
 const { checkAmountProvided,
     checkTransactionTypeProvided,
     checkCategoryProvided,
@@ -16,10 +16,10 @@ const { checkAmountProvided,
     checkTransactionID,
     checkAccountID,
     validateTransactionOwnership
-} = require("../validations/checkTransactions.js")
+} = require('../validations/checkTransactions.js')
 
 // create
-transactions.post("/create", checkAccountID,
+transactions.post('/create', checkAccountID,
     checkAmountProvided,
     checkTransactionTypeProvided,
     checkCategoryProvided,
@@ -31,7 +31,7 @@ transactions.post("/create", checkAccountID,
             return res.status(201).json(newTransaction)
         }
         catch (error) {
-            console.error("Error creating new transaction:", error)
+            console.error('Error creating new transaction:', error)
             return res.status(500).json({
                 error: `Internal server error ` +
                     `while creating the transaction.`
@@ -41,7 +41,7 @@ transactions.post("/create", checkAccountID,
 )
 
 // get one
-transactions.post("/:transaction_id",
+transactions.post('/:transaction_id',
     checkAccountID,
     checkTransactionID,
     async (req, res) => {
@@ -54,22 +54,22 @@ transactions.post("/:transaction_id",
             }
 
             if (!oneTransaction) {
-                return res.status(404).json({ error: "Transaction not found" })
+                return res.status(404).json({ error: 'Transaction not found' })
             }
 
             if (oneTransaction.account_id !== account_id) {
-                return res.status(404).json({ error: "Transaction not found for this account" })
+                return res.status(404).json({ error: 'Transaction not found for this account' })
             }
 
             return res.status(200).json(oneTransaction)
         } catch (error) {
-            console.error("Error fetching one transaction:", error)
-            return res.status(500).json({ error: "Internal server error" })
+            console.error('Error fetching one transaction:', error)
+            return res.status(500).json({ error: 'Internal server error' })
         }
     })
 
 // get all
-transactions.post("/", checkAccountID, async (req, res) => {
+transactions.post('/', checkAccountID, async (req, res) => {
     const { account_id } = req.params
     try {
         const transactionsList = await getAllTransactions(account_id)
@@ -84,13 +84,13 @@ transactions.post("/", checkAccountID, async (req, res) => {
 
         return res.status(200).json(transactionsList)
     } catch (error) {
-        console.error("Error fetching transactions:", error)
-        return res.status(500).json({ error: "Internal server error" })
+        console.error('Error fetching transactions:', error)
+        return res.status(500).json({ error: 'Internal server error' })
     }
 })
 
 // delete
-transactions.delete("/:transaction_id",
+transactions.delete('/:transaction_id',
     checkAccountID,
     checkTransactionID,
     validateTransactionOwnership,
@@ -104,12 +104,12 @@ transactions.delete("/:transaction_id",
             }
 
             if (!deletedTransaction) {
-                return res.status(404).json({ error: "Transaction not found" })
+                return res.status(404).json({ error: 'Transaction not found' })
             }
 
             return res.status(200).json(deletedTransaction)
         } catch (error) {
-            console.error("Error in delete controller path for transactions:", error)
+            console.error('Error in delete controller path for transactions:', error)
             return res.status(500).json({
                 error: `${error} Error in delete controller path for transactions.`
             })
@@ -117,7 +117,7 @@ transactions.delete("/:transaction_id",
     })
 
 // update
-transactions.put("/:transaction_id",
+transactions.put('/:transaction_id',
     checkAccountID,
     checkTransactionID,
     validateTransactionOwnership,
@@ -134,13 +134,13 @@ transactions.put("/:transaction_id",
             const updatedTransaction = await updateTransaction(transaction_id, transactionToBeUpdated)
 
             if (!updatedTransaction) {
-                return res.status(404).json({ error: "Transaction not found or no changes were made." })
+                return res.status(404).json({ error: 'Transaction not found or no changes were made.' })
             }
 
             return res.status(200).json(updatedTransaction)
 
         } catch (error) {
-            console.error("Error updating transaction:", error)
+            console.error('Error updating transaction:', error)
             return res.status(500).json({
                 error: `Internal server error while updating the transaction.`
             })

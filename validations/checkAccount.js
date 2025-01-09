@@ -1,7 +1,7 @@
 const { getOneAccountByUserName,
     getOneAccountByEmail,
     getAllAccounts
-} = require("../queries/accounts")
+} = require('../queries/accounts')
 
 const reservedUsernames = new Set(['admin', 'root', 'superuser', 'administrator', 'support',
     'help', 'moderator', 'system', 'guest', 'owner', 'master', 'test', 'user', 'manager'])
@@ -10,7 +10,7 @@ const checkUsernameProvided = (req, res, next) => {
     if (req.body?.username) {
         return next()
     } else {
-        return res.status(400).json({ error: "Username is required!" })
+        return res.status(400).json({ error: 'Username is required!' })
     }
 }
 
@@ -18,12 +18,12 @@ const checkUsernameExists = async (req, res, next) => {
     try {
         const registeredAccount = await getOneAccountByUserName(req.body?.username)
         if (registeredAccount) {
-            return res.status(409).json({ error: "Account already registered with this username." })
+            return res.status(409).json({ error: 'Account already registered with this username.' })
         } else {
             return next()
         }
     } catch (error) {
-        return res.status(500).json({ error: "Internal Server Error at checkUsernameExists." })
+        return res.status(500).json({ error: 'Internal Server Error at checkUsernameExists.' })
     }
 }
 
@@ -31,16 +31,16 @@ const checkUsernameExistsOtherThanSelf = async (req, res, next) => {
     try {
         const { account_id } = req.params
         if (isNaN(Number(account_id))) {
-            return res.status(400).json({ error: "Invalid or malformed account ID" })
+            return res.status(400).json({ error: 'Invalid or malformed account ID' })
         }
         const registeredAccount = await getOneAccountByUserName(req.body?.username)
         if (registeredAccount?.account_id === Number(account_id) || !registeredAccount) {
             return next()
         } else {
-            return res.status(409).json({ error: "Account already registered with this username." })
+            return res.status(409).json({ error: 'Account already registered with this username.' })
         }
     } catch (error) {
-        return res.status(500).json({ error: "Internal Server Error at checkUsernameExistsOtherThanSelf." })
+        return res.status(500).json({ error: 'Internal Server Error at checkUsernameExistsOtherThanSelf.' })
     }
 }
 
@@ -48,7 +48,7 @@ const checkEmailProvided = (req, res, next) => {
     if (req.body?.email) {
         return next()
     } else {
-        return res.status(400).json({ error: "Email is required!" })
+        return res.status(400).json({ error: 'Email is required!' })
     }
 }
 
@@ -56,12 +56,12 @@ const checkEmailExists = async (req, res, next) => {
     try {
         const registeredAccount = await getOneAccountByEmail(req.body?.email)
         if (registeredAccount?.email) {
-            return res.status(409).json({ error: "Account already registered with this address." })
+            return res.status(409).json({ error: 'Account already registered with this address.' })
         } else {
             return next()
         }
     } catch (error) {
-        return res.status(500).json({ error: "Internal Server Error at checkEmailExists." })
+        return res.status(500).json({ error: 'Internal Server Error at checkEmailExists.' })
     }
 }
 
@@ -69,16 +69,16 @@ const checkEmailExistsOtherThanSelf = async (req, res, next) => {
     try {
         const { account_id } = req.params
         if (isNaN(Number(account_id))) {
-            return res.status(400).json({ error: "Invalid or malformed account ID" })
+            return res.status(400).json({ error: 'Invalid or malformed account ID' })
         }
         const registeredAccount = await getOneAccountByEmail(req.body?.email)
         if (registeredAccount?.account_id === Number(account_id) || !registeredAccount) {
             return next()
         } else {
-            res.status(409).json({ error: "Account already registered with this email." })
+            res.status(409).json({ error: 'Account already registered with this email.' })
         }
     } catch (error) {
-        return res.status(500).json({ error: "Internal Server Error at checkEmailExistsOtherThanSelf." })
+        return res.status(500).json({ error: 'Internal Server Error at checkEmailExistsOtherThanSelf.' })
     }
 }
 
@@ -86,7 +86,7 @@ const checkPasswordProvided = (req, res, next) => {
     if (req.body?.password) {
         return next()
     } else {
-        return res.status(400).json({ error: "Password is required!" })
+        return res.status(400).json({ error: 'Password is required!' })
     }
 }
 
@@ -94,7 +94,7 @@ const checkNewPasswordProvided = (req, res, next) => {
     if (req.body?.newPassword) {
         return next()
     } else {
-        return res.status(400).json({ error: "New password is required!" })
+        return res.status(400).json({ error: 'New password is required!' })
     }
 }
 
@@ -106,10 +106,10 @@ const checkValidUsername = async (req, res, next) => {
         if (allUsernames.includes(username)) {
             return next()
         } else {
-            return res.status(400).json({ error: "Invalid username provided." })
+            return res.status(400).json({ error: 'Invalid username provided.' })
         }
     } catch (error) {
-        return res.status(500).json({ error: "Internal Server Error at checkValidUsername." })
+        return res.status(500).json({ error: 'Internal Server Error at checkValidUsername.' })
     }
 }
 
@@ -118,16 +118,16 @@ const checkAccountIndex = async (req, res, next) => {
         const allAccounts = await getAllAccounts()
         const { account_id } = req.params
         if (isNaN(Number(account_id))) {
-            return res.status(400).json({ error: "Invalid or malformed account ID" })
+            return res.status(400).json({ error: 'Invalid or malformed account ID' })
         }
         const ids = allAccounts.map(e => e.account_id)
         if (ids.includes(Number(account_id))) {
             return next()
         } else {
-            return res.status(400).json({ error: "Account ID does not exist." })
+            return res.status(400).json({ error: 'Account ID does not exist.' })
         }
     } catch (error) {
-        return res.status(500).json({ error: "Internal Server Error at checkAccountIndex." })
+        return res.status(500).json({ error: 'Internal Server Error at checkAccountIndex.' })
     }
 }
 
@@ -136,7 +136,7 @@ const checkEmailFormat = (req, res, next) => {
     const email = req.body?.email
 
     if (!email || !emailRegex.test(email)) {
-        return res.status(400).json({ error: "Invalid email format!" })
+        return res.status(400).json({ error: 'Invalid email format!' })
     }
 
     const [localPart, domainPart] = email?.split('@')
@@ -145,7 +145,7 @@ const checkEmailFormat = (req, res, next) => {
     if (reservedUsernames.has(localPart.toLowerCase()) ||
         reservedUsernames.has(domainName.toLowerCase()) ||
         reservedUsernames.has(topLevelDomain.toLowerCase())) {
-        return res.status(400).json({ error: "Email cannot contain reserved words in any part!" })
+        return res.status(400).json({ error: 'Email cannot contain reserved words in any part!' })
     }
 
     return next()
@@ -188,24 +188,24 @@ const checkUsernameValidity = (req, res, next) => {
 
     const isReservedUsername = (username) => reservedUsernames.has(username.toLowerCase())
     if (isReservedUsername(username)) {
-        return res.status(400).json({ error: "Username cannot be a reserved name!" })
+        return res.status(400).json({ error: 'Username cannot be a reserved name!' })
     }
 
     if (firstname?.toLowerCase() + lastname?.toLowerCase() === username?.toLowerCase()) {
-        return res.status(400).json({ error: "Username cannot be the same as your firstname and lastname combined!" })
+        return res.status(400).json({ error: 'Username cannot be the same as your firstname and lastname combined!' })
     }
 
     if (dob && username === dob) {
-        return res.status(400).json({ error: "Username cannot be your date of birth!" })
+        return res.status(400).json({ error: 'Username cannot be your date of birth!' })
     }
 
     if (username.length < 3 || username.length > 30) {
-        return res.status(400).json({ error: "Username must be between 3 and 30 characters long!" })
+        return res.status(400).json({ error: 'Username must be between 3 and 30 characters long!' })
     }
 
     const validUsernameRegex = /^[a-zA-Z0-9_-]+$/
     if (!validUsernameRegex.test(username)) {
-        return res.status(400).json({ error: "Username must contain only letters, numbers, hyphens, or underscores!" })
+        return res.status(400).json({ error: 'Username must contain only letters, numbers, hyphens, or underscores!' })
     }
 
     return next()
@@ -217,7 +217,7 @@ const checkDobFormat = (req, res, next) => {
 
     if (dob) {
         if (!dob || !dobRegex.test(dob)) {
-            return res.status(400).json({ error: "Date of birth must be in the format ##/##/#### or #/#/####" })
+            return res.status(400).json({ error: 'Date of birth must be in the format ##/##/#### or #/#/####' })
         }
 
         const [, month, day, year] = dob.match(dobRegex)
@@ -227,7 +227,7 @@ const checkDobFormat = (req, res, next) => {
         minDob.setFullYear(minDob.getFullYear() - 100)
 
         if (dobDate < minDob || dobDate > today) {
-            return res.status(400).json({ error: "Date of birth must be within the last 100 years and cannot be in the future." })
+            return res.status(400).json({ error: 'Date of birth must be within the last 100 years and cannot be in the future.' })
         }
     }
 
@@ -238,27 +238,27 @@ const checkPasswordStrength = (passwordField) => (req, res, next) => {
     const password = req.body[passwordField]
 
     if (!/(?=.*\d)/.test(password)) {
-        return res.status(400).json({ error: "Password must contain at least one digit." })
+        return res.status(400).json({ error: 'Password must contain at least one digit.' })
     }
 
     if (!/(?=.*[a-z])/.test(password)) {
-        return res.status(400).json({ error: "Password must contain at least one lowercase letter." })
+        return res.status(400).json({ error: 'Password must contain at least one lowercase letter.' })
     }
 
     if (!/(?=.*[A-Z])/.test(password)) {
-        return res.status(400).json({ error: "Password must contain at least one uppercase letter." })
+        return res.status(400).json({ error: 'Password must contain at least one uppercase letter.' })
     }
 
     if (!/(?=.*[\W_])/.test(password)) {
-        return res.status(400).json({ error: "Password must contain at least one special character." })
+        return res.status(400).json({ error: 'Password must contain at least one special character.' })
     }
 
     if (password.length < 8) {
-        return res.status(400).json({ error: "Password must be at least 8 characters long." })
+        return res.status(400).json({ error: 'Password must be at least 8 characters long.' })
     }
 
     if (password.length > 128) {
-        return res.status(400).json({ error: "Password must not exceed 128 characters." })
+        return res.status(400).json({ error: 'Password must not exceed 128 characters.' })
     }
 
     return next()

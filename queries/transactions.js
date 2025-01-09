@@ -1,5 +1,5 @@
 const db = require(`../db/dbConfig.js`)
-const { updateAccount } = require("../queries/accounts")
+const { updateAccount } = require('../queries/accounts')
 
 const getAllTransactions = async (account_id) => {
     try {

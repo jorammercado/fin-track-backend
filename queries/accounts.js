@@ -1,4 +1,4 @@
-const db = require("../db/dbConfig.js")
+const db = require('../db/dbConfig.js')
 
 const getOneAccount = async (id) => {
     try {
@@ -21,7 +21,7 @@ const getAllAccounts = async () => {
 
 const getOneAccountByEmail = async (email) => {
     try {
-        const account = await db.oneOrNone("SELECT * FROM accounts WHERE email=$1",
+        const account = await db.oneOrNone('SELECT * FROM accounts WHERE email=$1',
             email)
         return account
     }
@@ -32,7 +32,7 @@ const getOneAccountByEmail = async (email) => {
 
 const getOneAccountByUserName = async (username) => {
     try {
-        const account = await db.oneOrNone("SELECT * FROM accounts WHERE username=$1",
+        const account = await db.oneOrNone('SELECT * FROM accounts WHERE username=$1',
             username)
         return account
     }
@@ -161,7 +161,7 @@ const updateAccountMFAOneTimePassword = async (account_id, hashedOneTimePassword
             [hashedOneTimePassword, expirationTime, account_id]
         )
     } catch (err) {
-        console.error("Error updating an account's MFA - One Time Password: ", err)
+        console.error('Error updating an account\'s MFA - One Time Password: ', err)
         throw err
     }
 }

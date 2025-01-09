@@ -1,6 +1,6 @@
-const express = require("express")
-const bcrypt = require("bcryptjs")
-const jwt = require("jsonwebtoken")
+const express = require('express')
+const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 const JWT_SECRET = process.env.JWT_SECRET
 const accounts = express.Router()
 
@@ -12,7 +12,7 @@ const {
     updateAccount,
     updateAccountPassword,
     updateAccountMFAOneTimePassword
-} = require("../queries/accounts.js")
+} = require('../queries/accounts.js')
 
 const {
     checkUsernameProvided,
@@ -30,20 +30,20 @@ const {
     checkDobFormat,
     checkNewPasswordProvided,
     checkPasswordStrength
-} = require("../validations/checkAccount.js")
+} = require('../validations/checkAccount.js')
 
-const { createLoginRecord, getLoginRecordsByAccountID } = require("../queries/loginHistory.js")
-const { verifyToken, setDefaultAccountValues } = require("../middleware/miscUtilityMiddleware.js")
-const createMailOptions = require("../email/emailOptions.js")
+const { createLoginRecord, getLoginRecordsByAccountID } = require('../queries/loginHistory.js')
+const { verifyToken, setDefaultAccountValues } = require('../middleware/miscUtilityMiddleware.js')
+const createMailOptions = require('../email/emailOptions.js')
 const transporter = require('../email/emailTransporter.js')
 const OTP_EXPIRATION_MS = 3 * 60 * 1000
 
-const transactionsController = require("./transactionsController.js")
-accounts.use("/:account_id/transactions", verifyToken, transactionsController)
+const transactionsController = require('./transactionsController.js')
+accounts.use('/:account_id/transactions', verifyToken, transactionsController)
 
 // start login 
 accounts.post(
-    "/login-initiate",
+    '/login-initiate',
     checkEmailProvided,
     checkPasswordProvided,
     async (req, res) => {
@@ -72,7 +72,7 @@ accounts.post(
             // send one time password
             const mailOptions = createMailOptions(
                 oneAccount.email,
-                "Your OTP for Login",
+                'Your OTP for Login',
                 `Your one-time password (OTP) is: ${otp}. It will expire in 3 minutes.`
             )
             transporter.sendMail(mailOptions)
@@ -80,11 +80,11 @@ accounts.post(
                 .catch(error => console.error('Failed to send OTP email:', error))
 
             return res.status(200).json({
-                message: "Please check your email for the one-time password that has been sent to it.",
+                message: 'Please check your email for the one-time password that has been sent to it.',
                 account_id: oneAccount.account_id
             })
         } catch (error) {
-            console.error("Error in initiate login:", error)
+            console.error('Error in initiate login:', error)
             return res.status(500).json({
                 error: `An error occurred while processing your request. ` +
                     `Please try again later.`
@@ -94,12 +94,12 @@ accounts.post(
 
 // complete login
 accounts.post(
-    "/verify-otp",
+    '/verify-otp',
     async (req, res) => {
         const { account_id, otp } = req.body
-        const loginFailureMessage = { error: "Invalid account or OTP." }
+        const loginFailureMessage = { error: 'Invalid account or OTP.' }
         const ip_address = req.ip
-        const device_fingerprint = req.headers['user-agent'] || "unknown"
+        const device_fingerprint = req.headers['user-agent'] || 'unknown'
 
         try {
             const account = await getOneAccount(account_id)
@@ -124,7 +124,7 @@ accounts.post(
 
             delete account.password_hashed
 
-            res.status(200).json({ message: "Login successful.", token, account })
+            res.status(200).json({ message: 'Login successful.', token, account })
 
             // new browser login notification
             const previousLogins = await getLoginRecordsByAccountID(account.account_id)
@@ -134,7 +134,7 @@ accounts.post(
             )
             if (isNewDevice) {
                 const mailOptionsNewDevice = createMailOptions(account.email,
-                    "New Browser Login Detected",
+                    'New Browser Login Detected',
                     `We detected a new browser login to your account.\nIP Address: ` +
                     `${ip_address}\nDevice: ${device_fingerprint}\nIf ` +
                     `this wasn't you, please reset your password or contact support.`
@@ -149,14 +149,14 @@ accounts.post(
                 .then(() => console.log('Login record created successfully.'))
                 .catch(error => console.error('Failed to create login record:', error))
         } catch (error) {
-            console.error("Error verifying OTP:", error)
-            return res.status(500).json({ error: "Server error, please try again later: " })
+            console.error('Error verifying OTP:', error)
+            return res.status(500).json({ error: 'Server error, please try again later: ' })
         }
     })
 
 // sign up
 accounts.post(
-    "/",
+    '/',
     checkUsernameProvided,
     checkEmailProvided,
     checkPasswordProvided,
@@ -168,12 +168,12 @@ accounts.post(
     checkUsernameValidity,
     checkDobFormat,
     setDefaultAccountValues,
-    checkPasswordStrength("password"),
+    checkPasswordStrength('password'),
     async (req, res) => {
         try {
             const newAccount = req.body
             const ip_address = req.ip
-            const device_fingerprint = req.headers['user-agent'] || "unknown"
+            const device_fingerprint = req.headers['user-agent'] || 'unknown'
             const salt = await bcrypt.genSalt(10)
             newAccount.password = await bcrypt.hash(newAccount.password, salt)
 
@@ -209,38 +209,38 @@ accounts.post(
                 })
             }
         } catch (error) {
-            return res.status(500).json({ error: "Internal server error. Please try again later." })
+            return res.status(500).json({ error: 'Internal server error. Please try again later.' })
         }
     })
 
 // delete account
 accounts.delete(
-    "/:account_id",
+    '/:account_id',
     verifyToken,
     checkAccountIndex,
     async (req, res) => {
         try {
             const { account_id } = req.params
-            if (account_id === "1") {
-                return res.status(401).json({ error: "Guest account cannot be deleted!" })
+            if (account_id === '1') {
+                return res.status(401).json({ error: 'Guest account cannot be deleted!' })
             }
             const deletedAccount = await deleteAccountByAccountID(account_id)
             if (deletedAccount) {
-                return res.status(200).json({ message: "Account Deleted." })
+                return res.status(200).json({ message: 'Account Deleted.' })
             }
             else {
-                return res.status(404).json({ error: "Failed to Delete Account." })
+                return res.status(404).json({ error: 'Failed to Delete Account.' })
             }
         }
         catch (error) {
-            console.error("Error deleting account: ", error)
-            return res.status(500).json({ error: "Server error, please try again later." })
+            console.error('Error deleting account: ', error)
+            return res.status(500).json({ error: 'Server error, please try again later.' })
         }
     })
 
 // update account
 accounts.put(
-    "/:account_id",
+    '/:account_id',
     verifyToken,
     checkAccountIndex,
     checkUsernameExistsOtherThanSelf,
@@ -280,36 +280,36 @@ accounts.put(
             }
         }
         catch (error) {
-            console.error("Error updating account: ", error)
+            console.error('Error updating account: ', error)
             return res.status(500).json({ error: `Server error, please try again later.` })
         }
     })
 
 // update password 
 accounts.put(
-    "/:account_id/password",
+    '/:account_id/password',
     verifyToken,
     checkAccountIndex,
     checkPasswordProvided,
     checkNewPasswordProvided,
-    checkPasswordStrength("newPassword"),
+    checkPasswordStrength('newPassword'),
     async (req, res) => {
         try {
             const { account_id } = req.params
             const { password, newPassword } = req.body
 
             if (account_id === '1') {
-                return res.status(401).json({ error: "Guest account password cannot be updated!" })
+                return res.status(401).json({ error: 'Guest account password cannot be updated!' })
             }
 
             const account = await getOneAccount(account_id)
             if (!account) {
-                return res.status(404).json({ error: "Account not found." })
+                return res.status(404).json({ error: 'Account not found.' })
             }
 
             const isMatch = await bcrypt.compare(password, account.password_hashed)
             if (!isMatch) {
-                return res.status(400).json({ error: "Invalid credentials. Please try again." })
+                return res.status(400).json({ error: 'Invalid credentials. Please try again.' })
             }
 
             const salt = await bcrypt.genSalt(10)
@@ -338,22 +338,22 @@ accounts.put(
                 })
             }
         } catch (error) {
-            console.error("Unable to update account password: ", error)
+            console.error('Unable to update account password: ', error)
             return res.status(500).json({ error: `Server error, please try again later.` })
         }
     })
 
 // guest login
 accounts.post(
-    "/guest-login",
+    '/guest-login',
     async (req, res) => {
         try {
             const guestAccount = await getOneAccountByEmail('guest_account@domain.com')
             const ip_address = req.ip
-            const device_fingerprint = req.headers['user-agent'] || "unknown"
+            const device_fingerprint = req.headers['user-agent'] || 'unknown'
 
             if (!guestAccount) {
-                return res.status(500).json({ error: "Guest account is not available. Please try again later." })
+                return res.status(500).json({ error: 'Guest account is not available. Please try again later.' })
             }
 
             const token = jwt.sign(
@@ -368,14 +368,14 @@ accounts.post(
 
             delete guestAccount.password_hashed
 
-            res.status(200).json({ message: "Login successful.", token, guestAccount })
+            res.status(200).json({ message: 'Login successful.', token, guestAccount })
 
             createLoginRecord(guestAccount.account_id, ip_address, device_fingerprint)
                 .then(() => console.log('Login record created successfully.'))
                 .catch(error => console.error('Failed to create login record:', error))
         } catch (error) {
-            console.error("Error during guest login:", error)
-            return res.status(500).json({ error: "Server error, please try again later." })
+            console.error('Error during guest login:', error)
+            return res.status(500).json({ error: 'Server error, please try again later.' })
         }
     })
 

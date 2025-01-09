@@ -1,4 +1,4 @@
-const db = require("../db/dbConfig.js")
+const db = require('../db/dbConfig.js')
 
 const createLoginRecord = async (account_id, ip_address, device_fingerprint) => {
     try {
