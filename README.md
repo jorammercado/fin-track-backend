@@ -107,7 +107,7 @@ The FinTrack Backend Services power the FinTrack application by ensuring secure 
 ---
 
 ## Deployed Server
-- **Backend Server hosted on Render**: [https://fintrack-backend-services.onrender.com/](https://icapital-budgeter-backend-services.onrender.com/)
+- **Backend Server hosted on Render**: [https://fintrack-backend-services.onrender.com/](https://fintrack-backend-services.onrender.com/)
 
 ## GitHub Repositories
 - **Frontend**: [https://github.com/JoramAMercado/fin-track-frontend](https://github.com/JoramAMercado/fin-track-frontend)
