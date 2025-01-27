@@ -1,8 +1,8 @@
-# <img src="./icapital-logo-full-name.svg" alt="iCapital Logo"> - Budgeter Backend Services
+# Financial Insights and Tracking Application Backend Services
 
 ## Description
 
-The iCapital Budgeter Backend Services power the iCapital Budgeter application by ensuring secure user authentication, seamless database management for accounts and financial transactions, and timely email notifications.
+The FinTrack Backend Services power the FinTrack application by ensuring secure user authentication, seamless database management for accounts and financial transactions, and timely email notifications.
 
 ---
 
@@ -107,24 +107,24 @@ The iCapital Budgeter Backend Services power the iCapital Budgeter application b
 ---
 
 ## Deployed Server
-- **Backend Server hosted on Render**: [https://icapital-budgeter-backend-services.onrender.com/](https://icapital-budgeter-backend-services.onrender.com/)
+- **Backend Server hosted on Render**: [https://fintrack-backend-services.onrender.com/](https://icapital-budgeter-backend-services.onrender.com/)
 
 ## GitHub Repositories
-- **Frontend**: [https://github.com/jorammercado/icapital-budgeter-frontend](https://github.com/jorammercado/icapital-budgeter-frontend)
-- **Backend**: [https://github.com/jorammercado/icapital-budgeter-backend](https://github.com/jorammercado/icapital-budgeter-backend)
+- **Frontend**: [https://github.com/JoramAMercado/fin-track-frontend](https://github.com/JoramAMercado/fin-track-frontend)
+- **Backend**: [https://github.com/JoramAMercado/fin-track-backend](https://github.com/jorammercado/fin-track-backend)
 
 ## Installation
 
-1. Fork the repository from [https://github.com/jorammercado/icapital-budgeter-backend](https://github.com/jorammercado/icapital-budgeter-backend).
+1. Fork the repository from [https://github.com/JoramAMercado/fin-track-backend](https://github.com/JoramAMercado/fin-track-backend).
 
 2. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/icapital-budgeter-backend.git
+   git clone https://github.com/your-username/fin-track-backend.git
    ```
 
 3. Navigate to the project directory:
    ```bash
-   cd icapital-budgeter-backend
+   cd fin-track-backend
    ```
 
 4. Create a `.env` file in the root of the project directory with the following content:
@@ -185,4 +185,4 @@ This project is licensed under the MIT License. See the [LICENSE](https://openso
 ## Contact
 For any inquiries or feedback, please contact:
 
-- Joram Mercado: [GitHub](https://github.com/jorammercado), [LinkedIn](https://www.linkedin.com/in/jorammercado)
+- Joram Mercado: [GitHub](https://github.com/JoramAMercado), [LinkedIn](https://www.linkedin.com/in/joramamercado)

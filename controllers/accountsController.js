@@ -194,7 +194,7 @@ accounts.post(
                 const mailOptions = createMailOptions(
                     createdAccount.email,
                     'Welcome to Our Platform!',
-                    'Thank you for signing up to iCapital\'s Budgeter App.'
+                    'Thank you for signing up to the Financial Insights & Tracking Application.'
                 )
 
                 transporter.sendMail(mailOptions)

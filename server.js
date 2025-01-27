@@ -5,5 +5,5 @@ require('dotenv').config()
 const PORT = process.env.PORT 
 
 app.listen(PORT, () => {
-    console.log(`iCapital's - Budgeter Live on Port: ${PORT}`)
+    console.log(`FinTrack Live on Port: ${PORT}`)
 })
