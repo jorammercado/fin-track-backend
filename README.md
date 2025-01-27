@@ -132,7 +132,7 @@ The FinTrack Backend Services power the FinTrack application by ensuring secure 
    PORT=4001
    PG_HOST=localhost
    PG_PORT=5432
-   PG_DATABASE=icapital_dev
+   PG_DATABASE=fintrack_dev
    PG_USER=postgres
    JWT_SECRET=your_jwt_secret
    EMAIL_USER=your_email@example.com

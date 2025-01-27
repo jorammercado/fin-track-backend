@@ -1,7 +1,7 @@
-DROP DATABASE IF EXISTS icapital_dev;
-CREATE DATABASE icapital_dev;
+DROP DATABASE IF EXISTS fintrack_dev;
+CREATE DATABASE fintrack_dev;
 
-\c icapital_dev;
+\c fintrack_dev;
 
 CREATE TABLE accounts (
     account_id SERIAL PRIMARY KEY,

@@ -6,7 +6,7 @@ app.use(cors())
 app.use(express.json())
 
 app.get('/', (req, res) => {
-    res.send('Welcome to FinTrack\'s backend services')
+    res.send('Welcome to FinTrack!')
 })
 
 const accountsController = require('./controllers/accountsController')

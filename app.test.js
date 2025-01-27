@@ -14,7 +14,7 @@ describe("app.js", () => {
     it("should return a welcome message on GET /", async () => {
         const response = await request(app).get("/")
         expect(response.statusCode).toBe(200)
-        expect(response.text).toBe("Welcome to iCapital's - Budgeter")
+        expect(response.text).toBe("Welcome to FinTrack!")
     })
 
     it("should return 404 & error message for unknown routes", async () => {
