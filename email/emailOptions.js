@@ -1,4 +1,3 @@
-
 function createMailOptions(to, subject, text) {
     return {
         from: process.env.EMAIL_USER,

@@ -45,5 +45,5 @@ const setDefaultAccountValues = (req, res, next) => {
 
 module.exports = {
     verifyToken,
-    setDefaultAccountValues
+    setDefaultAccountValues,
 }

@@ -3,11 +3,12 @@ const { updateAccount } = require('../queries/accounts')
 
 const getAllTransactions = async (account_id) => {
     try {
-        const allTransactions = await db.any(`SELECT * FROM financial_transactions WHERE account_id=$1`,
-            [account_id])
+        const allTransactions = await db.any(
+            `SELECT * FROM financial_transactions WHERE account_id=$1`,
+            [account_id]
+        )
         return allTransactions
-    }
-    catch (err) {
+    } catch (err) {
         console.error(err)
         return { err: `${err}, sql query error - get all transactions` }
     }
@@ -15,8 +16,10 @@ const getAllTransactions = async (account_id) => {
 
 const getOneTransaction = async (transaction_id) => {
     try {
-        const oneTransaction = await db.oneOrNone(`SELECT * FROM financial_transactions WHERE transaction_id=$1`,
-            [transaction_id])
+        const oneTransaction = await db.oneOrNone(
+            `SELECT * FROM financial_transactions WHERE transaction_id=$1`,
+            [transaction_id]
+        )
 
         if (!oneTransaction) {
             console.error(`Transaction with id ${transaction_id} not found`)
@@ -24,8 +27,7 @@ const getOneTransaction = async (transaction_id) => {
         }
 
         return oneTransaction
-    }
-    catch (err) {
+    } catch (err) {
         console.error(err)
         return { err: `${err}, sql query error - get one transaction` }
     }
@@ -33,8 +35,10 @@ const getOneTransaction = async (transaction_id) => {
 
 const deleteTransaction = async (transaction_id) => {
     try {
-        const deletedTransaction = await db.oneOrNone(`DELETE FROM financial_transactions WHERE transaction_id=$1 RETURNING *`,
-            [transaction_id])
+        const deletedTransaction = await db.oneOrNone(
+            `DELETE FROM financial_transactions WHERE transaction_id=$1 RETURNING *`,
+            [transaction_id]
+        )
 
         if (!deletedTransaction) {
             console.error('Transaction not found')
@@ -60,12 +64,13 @@ const deleteTransaction = async (transaction_id) => {
         }
 
         if (balanceColumn) {
-            const updateValue = (transaction_type === 'expense' || transaction_type === 'investment')
-                ? -Number(amount)
-                : Number(amount)
+            const updateValue =
+                transaction_type === 'expense' || transaction_type === 'investment'
+                    ? -Number(amount)
+                    : Number(amount)
 
             const updatedData = {
-                [balanceColumn]: updateValue
+                [balanceColumn]: updateValue,
             }
             await updateAccount(account_id, updatedData)
         }
@@ -88,7 +93,7 @@ const createTransaction = async (transactionData) => {
         recurring_frequency = 'one-time',
         risk_level = 'n/a',
         is_planned = false,
-        created_at = new Date()
+        created_at = new Date(),
     } = transactionData
 
     try {
@@ -109,7 +114,7 @@ const createTransaction = async (transactionData) => {
                 recurring_frequency,
                 risk_level,
                 is_planned,
-                created_at
+                created_at,
             ]
         )
 
@@ -137,7 +142,7 @@ const createTransaction = async (transactionData) => {
         if (balanceColumn) {
             const updateValue = transaction_type === 'expense' ? -Number(amount) : Number(amount)
             const updatedData = {
-                [balanceColumn]: updateValue
+                [balanceColumn]: updateValue,
             }
             await updateAccount(account_id, updatedData)
         }
@@ -186,7 +191,7 @@ const updateTransaction = async (transaction_id, transactionData) => {
                 recurring_frequency,
                 risk_level,
                 is_planned,
-                transaction_id
+                transaction_id,
             ]
         )
 
@@ -207,5 +212,5 @@ module.exports = {
     getOneTransaction,
     deleteTransaction,
     createTransaction,
-    updateTransaction
+    updateTransaction,
 }

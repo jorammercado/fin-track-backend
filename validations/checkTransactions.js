@@ -26,7 +26,11 @@ const checkTransactionTypeProvided = (req, res, next) => {
 
     const allowedTypes = ['income', 'expense', 'investment', 'deposit']
     if (!allowedTypes.includes(transaction_type)) {
-        return res.status(400).json({ error: `Invalid transaction type: ${transaction_type}. Allowed values are: ${allowedTypes.join(', ')}` })
+        return res
+            .status(400)
+            .json({
+                error: `Invalid transaction type: ${transaction_type}. Allowed values are: ${allowedTypes.join(', ')}`,
+            })
     }
 
     return next()
@@ -40,17 +44,43 @@ const checkCategoryProvided = (req, res, next) => {
     }
 
     const allowedCategories = [
-        'salary', 'bonus', 'interest', 'dividend', 'rental income',
-        'business income', 'investment', 'groceries', 'utilities',
-        'rent/mortgage', 'transportation', 'education', 'healthcare',
-        'entertainment', 'subscriptions', 'travel', 'savings',
-        'emergency fund', 'retirement', 'clothing', 'dining',
-        'household supplies', 'charity', 'debt repayment', 'other',
-        'wages', 'account funding', 'loan disbursement', 'checking'
+        'salary',
+        'bonus',
+        'interest',
+        'dividend',
+        'rental income',
+        'business income',
+        'investment',
+        'groceries',
+        'utilities',
+        'rent/mortgage',
+        'transportation',
+        'education',
+        'healthcare',
+        'entertainment',
+        'subscriptions',
+        'travel',
+        'savings',
+        'emergency fund',
+        'retirement',
+        'clothing',
+        'dining',
+        'household supplies',
+        'charity',
+        'debt repayment',
+        'other',
+        'wages',
+        'account funding',
+        'loan disbursement',
+        'checking',
     ]
 
     if (!allowedCategories.includes(category)) {
-        return res.status(400).json({ error: `Invalid category: ${category}. Allowed values are: ${allowedCategories.join(', ')}` })
+        return res
+            .status(400)
+            .json({
+                error: `Invalid category: ${category}. Allowed values are: ${allowedCategories.join(', ')}`,
+            })
     }
 
     return next()
@@ -63,14 +93,14 @@ const checkRecurringDetails = (req, res, next) => {
         const allowedFrequencies = ['daily', 'weekly', 'monthly', 'yearly']
         if (!recurring_frequency || !allowedFrequencies.includes(recurring_frequency)) {
             return res.status(400).json({
-                error: `Recurring frequency is required when recurring is true! Allowed values are: ${allowedFrequencies.join(', ')}`
+                error: `Recurring frequency is required when recurring is true! Allowed values are: ${allowedFrequencies.join(', ')}`,
             })
         }
     }
 
     if (!recurring && recurring_frequency && recurring_frequency !== 'one-time') {
         return res.status(400).json({
-            error: `Recurring frequency should be 'one-time' when the transaction is not recurring.`
+            error: `Recurring frequency should be 'one-time' when the transaction is not recurring.`,
         })
     }
 
@@ -86,7 +116,11 @@ const checkRiskLevelProvided = (req, res, next) => {
 
     const allowedRiskLevels = ['n/a', 'low', 'moderate', 'high']
     if (!allowedRiskLevels.includes(req.body.risk_level)) {
-        return res.status(400).json({ error: `Invalid risk level: ${risk_level}. Allowed values are: ${allowedRiskLevels.join(', ')}` })
+        return res
+            .status(400)
+            .json({
+                error: `Invalid risk level: ${risk_level}. Allowed values are: ${allowedRiskLevels.join(', ')}`,
+            })
     }
 
     return next()
@@ -96,7 +130,9 @@ const checkTransactionID = async (req, res, next) => {
     const { transaction_id } = req.params
 
     if (!transaction_id || isNaN(Number(transaction_id)) || Number(transaction_id) <= 0) {
-        return res.status(400).json({ error: 'Invalid or missing transaction ID. It must be a positive number.' })
+        return res
+            .status(400)
+            .json({ error: 'Invalid or missing transaction ID. It must be a positive number.' })
     }
 
     try {
@@ -109,7 +145,9 @@ const checkTransactionID = async (req, res, next) => {
         return next()
     } catch (err) {
         console.error(`Error retrieving transaction: ${err}`)
-        return res.status(500).json({ error: 'Internal Server Error while validating transaction ID.' })
+        return res
+            .status(500)
+            .json({ error: 'Internal Server Error while validating transaction ID.' })
     }
 }
 
@@ -117,7 +155,9 @@ const checkAccountID = async (req, res, next) => {
     const { account_id } = req.params
 
     if (!account_id || isNaN(Number(account_id)) || Number(account_id) <= 0) {
-        return res.status(400).json({ error: 'Invalid or missing account ID. It must be a positive number.' })
+        return res
+            .status(400)
+            .json({ error: 'Invalid or missing account ID. It must be a positive number.' })
     }
 
     try {
@@ -155,7 +195,6 @@ const validateTransactionOwnership = async (req, res, next) => {
     }
 }
 
-
 module.exports = {
     checkAmountProvided,
     checkTransactionTypeProvided,
@@ -164,5 +203,5 @@ module.exports = {
     checkRiskLevelProvided,
     checkTransactionID,
     checkAccountID,
-    validateTransactionOwnership
+    validateTransactionOwnership,
 }

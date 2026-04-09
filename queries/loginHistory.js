@@ -4,7 +4,7 @@ const createLoginRecord = async (account_id, ip_address, device_fingerprint) => 
     try {
         const newLoginRecord = await db.one(
             `INSERT INTO login_history_icap_bdgt (account_id, ip_address, device_fingerprint) ` +
-            `VALUES ($1, $2, $3) RETURNING *`,
+                `VALUES ($1, $2, $3) RETURNING *`,
             [account_id, ip_address, device_fingerprint]
         )
         return newLoginRecord
@@ -39,5 +39,5 @@ const getAllLoginRecords = async () => {
 module.exports = {
     createLoginRecord,
     getLoginRecordsByAccountID,
-    getAllLoginRecords
+    getAllLoginRecords,
 }

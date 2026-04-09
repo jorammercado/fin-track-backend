@@ -1,10 +1,25 @@
-const { getOneAccountByUserName,
+const {
+    getOneAccountByUserName,
     getOneAccountByEmail,
-    getAllAccounts
+    getAllAccounts,
 } = require('../queries/accounts')
 
-const reservedUsernames = new Set(['admin', 'root', 'superuser', 'administrator', 'support',
-    'help', 'moderator', 'system', 'guest', 'owner', 'master', 'test', 'user', 'manager'])
+const reservedUsernames = new Set([
+    'admin',
+    'root',
+    'superuser',
+    'administrator',
+    'support',
+    'help',
+    'moderator',
+    'system',
+    'guest',
+    'owner',
+    'master',
+    'test',
+    'user',
+    'manager',
+])
 
 const checkUsernameProvided = (req, res, next) => {
     if (req.body?.username) {
@@ -40,7 +55,9 @@ const checkUsernameExistsOtherThanSelf = async (req, res, next) => {
             return res.status(409).json({ error: 'Account already registered with this username.' })
         }
     } catch (error) {
-        return res.status(500).json({ error: 'Internal Server Error at checkUsernameExistsOtherThanSelf.' })
+        return res
+            .status(500)
+            .json({ error: 'Internal Server Error at checkUsernameExistsOtherThanSelf.' })
     }
 }
 
@@ -78,7 +95,9 @@ const checkEmailExistsOtherThanSelf = async (req, res, next) => {
             res.status(409).json({ error: 'Account already registered with this email.' })
         }
     } catch (error) {
-        return res.status(500).json({ error: 'Internal Server Error at checkEmailExistsOtherThanSelf.' })
+        return res
+            .status(500)
+            .json({ error: 'Internal Server Error at checkEmailExistsOtherThanSelf.' })
     }
 }
 
@@ -102,7 +121,7 @@ const checkValidUsername = async (req, res, next) => {
     try {
         const allAccounts = await getAllAccounts()
         const { username } = req.params
-        const allUsernames = allAccounts.map(e => e.username)
+        const allUsernames = allAccounts.map((e) => e.username)
         if (allUsernames.includes(username)) {
             return next()
         } else {
@@ -120,7 +139,7 @@ const checkAccountIndex = async (req, res, next) => {
         if (isNaN(Number(account_id))) {
             return res.status(400).json({ error: 'Invalid or malformed account ID' })
         }
-        const ids = allAccounts.map(e => e.account_id)
+        const ids = allAccounts.map((e) => e.account_id)
         if (ids.includes(Number(account_id))) {
             return next()
         } else {
@@ -142,9 +161,11 @@ const checkEmailFormat = (req, res, next) => {
     const [localPart, domainPart] = email?.split('@')
     const [domainName, topLevelDomain] = domainPart?.split('.')
 
-    if (reservedUsernames.has(localPart.toLowerCase()) ||
+    if (
+        reservedUsernames.has(localPart.toLowerCase()) ||
         reservedUsernames.has(domainName.toLowerCase()) ||
-        reservedUsernames.has(topLevelDomain.toLowerCase())) {
+        reservedUsernames.has(topLevelDomain.toLowerCase())
+    ) {
         return res.status(400).json({ error: 'Email cannot contain reserved words in any part!' })
     }
 
@@ -155,12 +176,19 @@ const checkFirstnameFormat = (req, res, next) => {
     const nameRegex = /^[a-zA-Z-']+$/
     const firstname = req.body?.firstname
     if (firstname) {
-        if (!firstname || (nameRegex.test(firstname) && firstname.length >= 2 && firstname.length <= 50 && !reservedUsernames.has(firstname.toLowerCase()))) {
+        if (
+            !firstname ||
+            (nameRegex.test(firstname) &&
+                firstname.length >= 2 &&
+                firstname.length <= 50 &&
+                !reservedUsernames.has(firstname.toLowerCase()))
+        ) {
             return next()
         } else {
             return res.status(400).json({
-                error: `Firstname must contain only letters, apostrophes, or hyphens, ` +
-                    `and must be between 2 and 50 characters long!`
+                error:
+                    `Firstname must contain only letters, apostrophes, or hyphens, ` +
+                    `and must be between 2 and 50 characters long!`,
             })
         }
     }
@@ -171,12 +199,19 @@ const checkLastnameFormat = (req, res, next) => {
     const nameRegex = /^[a-zA-Z-']+$/
     const lastname = req.body?.lastname
     if (lastname) {
-        if (!lastname || (nameRegex.test(lastname) && lastname.length >= 2 && lastname.length <= 50 && !reservedUsernames.has(lastname.toLowerCase()))) {
+        if (
+            !lastname ||
+            (nameRegex.test(lastname) &&
+                lastname.length >= 2 &&
+                lastname.length <= 50 &&
+                !reservedUsernames.has(lastname.toLowerCase()))
+        ) {
             return next()
         } else {
             return res.status(400).json({
-                error: `Lastname must contain only letters, apostrophes, or hyphens, ` +
-                    `and must be between 2 and 50 characters long!`
+                error:
+                    `Lastname must contain only letters, apostrophes, or hyphens, ` +
+                    `and must be between 2 and 50 characters long!`,
             })
         }
     }
@@ -192,7 +227,9 @@ const checkUsernameValidity = (req, res, next) => {
     }
 
     if (firstname?.toLowerCase() + lastname?.toLowerCase() === username?.toLowerCase()) {
-        return res.status(400).json({ error: 'Username cannot be the same as your firstname and lastname combined!' })
+        return res
+            .status(400)
+            .json({ error: 'Username cannot be the same as your firstname and lastname combined!' })
     }
 
     if (dob && username === dob) {
@@ -205,7 +242,11 @@ const checkUsernameValidity = (req, res, next) => {
 
     const validUsernameRegex = /^[a-zA-Z0-9_-]+$/
     if (!validUsernameRegex.test(username)) {
-        return res.status(400).json({ error: 'Username must contain only letters, numbers, hyphens, or underscores!' })
+        return res
+            .status(400)
+            .json({
+                error: 'Username must contain only letters, numbers, hyphens, or underscores!',
+            })
     }
 
     return next()
@@ -217,7 +258,9 @@ const checkDobFormat = (req, res, next) => {
 
     if (dob) {
         if (!dob || !dobRegex.test(dob)) {
-            return res.status(400).json({ error: 'Date of birth must be in the format ##/##/#### or #/#/####' })
+            return res
+                .status(400)
+                .json({ error: 'Date of birth must be in the format ##/##/#### or #/#/####' })
         }
 
         const [, month, day, year] = dob.match(dobRegex)
@@ -227,7 +270,11 @@ const checkDobFormat = (req, res, next) => {
         minDob.setFullYear(minDob.getFullYear() - 100)
 
         if (dobDate < minDob || dobDate > today) {
-            return res.status(400).json({ error: 'Date of birth must be within the last 100 years and cannot be in the future.' })
+            return res
+                .status(400)
+                .json({
+                    error: 'Date of birth must be within the last 100 years and cannot be in the future.',
+                })
         }
     }
 
@@ -242,15 +289,21 @@ const checkPasswordStrength = (passwordField) => (req, res, next) => {
     }
 
     if (!/(?=.*[a-z])/.test(password)) {
-        return res.status(400).json({ error: 'Password must contain at least one lowercase letter.' })
+        return res
+            .status(400)
+            .json({ error: 'Password must contain at least one lowercase letter.' })
     }
 
     if (!/(?=.*[A-Z])/.test(password)) {
-        return res.status(400).json({ error: 'Password must contain at least one uppercase letter.' })
+        return res
+            .status(400)
+            .json({ error: 'Password must contain at least one uppercase letter.' })
     }
 
     if (!/(?=.*[\W_])/.test(password)) {
-        return res.status(400).json({ error: 'Password must contain at least one special character.' })
+        return res
+            .status(400)
+            .json({ error: 'Password must contain at least one special character.' })
     }
 
     if (password.length < 8) {
@@ -263,7 +316,6 @@ const checkPasswordStrength = (passwordField) => (req, res, next) => {
 
     return next()
 }
-
 
 module.exports = {
     checkUsernameProvided,
@@ -281,5 +333,5 @@ module.exports = {
     checkLastnameFormat,
     checkUsernameValidity,
     checkDobFormat,
-    checkPasswordStrength
+    checkPasswordStrength,
 }
